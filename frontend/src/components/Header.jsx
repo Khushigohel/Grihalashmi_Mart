@@ -13,7 +13,7 @@ function Header() {
       subheading: 'Another catchy description here.'
     },
     {
-      image: 'https://static.vecteezy.com/system/resources/previews/000/659/305/non_2x/art-and-craft-creative-object-design-vector.jpg',
+      image: 'https://5.imimg.com/data5/SELLER/Default/2022/6/SL/GA/DO/49066698/ladies-clothes-stitching-services.jpg',
       heading: 'Third Slide Title',
       subheading: 'More details or an enticing tagline.'
     },
