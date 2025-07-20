@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import './Header.css'
+import '../css/Header.css'
 function Header() {
     const Slider=[
     {
@@ -8,20 +8,15 @@ function Header() {
       subheading: 'Discover amazing articles and insights.'
     },
     {
-      image: 'https://static.vecteezy.com/system/resources/previews/055/048/386/non_2x/fermented-homemade-food-photo.jpg',
+      image: 'https://i.ytimg.com/vi/TeJQj_AEPKs/maxresdefault.jpg',
       heading: 'Our Second Slide',
       subheading: 'Another catchy description here.'
     },
     {
-      image: 'https://5.imimg.com/data5/SELLER/Default/2022/6/SL/GA/DO/49066698/ladies-clothes-stitching-services.jpg',
+      image: 'https://static.vecteezy.com/system/resources/previews/000/659/305/non_2x/art-and-craft-creative-object-design-vector.jpg',
       heading: 'Third Slide Title',
       subheading: 'More details or an enticing tagline.'
     },
-    {
-      image:'https://thumbs.dreamstime.com/b/kolkata-west-bengal-india-december-rd-unidentified-woman-preparing-jute-bags-artworks-handicraft-handicraft-fair-kolkata-107153045.jpg',
-      heading:"it is cartf",
-      subheading:"more details to the"
-    }
     ];
   const [currentSlide, setCurrentSlide] = useState(0);
 

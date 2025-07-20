@@ -1,0 +1,16 @@
+.profile-sidebar .list-group-item {
+  cursor: pointer;
+  border: none;
+  padding: 12px 20px;
+  font-weight: 500;
+}
+
+.profile-sidebar .list-group-item.active {
+  background-color: #2874f0;
+  color: white;
+  border-radius: 5px;
+}
+
+.profile-sidebar .list-group-item:hover {
+  background-color: #e3f2fd;
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Navbar.css'; // Optional custom CSS
+
 import { FaShoppingCart, FaSearch } from 'react-icons/fa';
 
 const Navbar = () => {
@@ -8,7 +8,7 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
       <div className="container-fluid px-4">
         <Link className="navbar-brand fw-bold text-primary" to="/">
-          Grihalakshmi Mart
+          Gruhalakshmi Mart
         </Link>
 
         {/* Mobile Toggle Button */}
@@ -38,11 +38,11 @@ const Navbar = () => {
             </li>
 
             <li className="nav-item">
-              <Link className="nav-link" to="/products">Products</Link>
+              <Link className="nav-link" to="/product">Products</Link>
             </li>
 
             <li className="nav-item">
-              <Link className="nav-link" to="/categories">Categories</Link>
+              <Link className="nav-link" to="/profile">Categories</Link>
             </li>
 
             <li className="nav-item">

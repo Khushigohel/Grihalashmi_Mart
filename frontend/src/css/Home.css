@@ -1,0 +1,12 @@
+/* Why Choose Us Section*/
+.why-choose-us {
+  text-align: center;
+  padding: 40px;
+}
+
+.choose-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
