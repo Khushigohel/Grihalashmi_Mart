@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const crypto = require("crypto");
-const OTP = require("../models/otpStore");
 const fetch = require("node-fetch");
 const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
+const OtpStore = require("../../models/OtpStore");
+
 
 const EMAILJS_SERVICE_ID = "service_eyc3wmd";
 const EMAILJS_TEMPLATE_ID = "template_fe5id9p";
@@ -23,7 +24,7 @@ router.post("/send-otp", async (req, res) => {
     const otp = crypto.randomInt(100000, 999999).toString();
 
     // 3. Store in DB with 20 mins expiry
-    await OTP.create({
+    await OtpStore.create({
       email,
       otp,
       expiresAt: new Date(Date.now() + 20 * 60 * 1000),
@@ -66,7 +67,7 @@ router.post("/send-otp", async (req, res) => {
 router.post("/verify-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
-    const otpEntry = await OTP.findOne({ email, otp });
+    const otpEntry = await OtpStore.findOne({ email, otp });
 
     if (!otpEntry) return res.status(400).json({ message: "Invalid OTP" });
     if (otpEntry.expiresAt < new Date()) {
@@ -84,7 +85,7 @@ router.post("/verify-otp", async (req, res) => {
 router.post("/reset-password", async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
-    const otpEntry = await OTP.findOne({ email, otp });
+    const otpEntry = await OtpStore.findOne({ email, otp });
 
     if (!otpEntry) return res.status(400).json({ message: "Invalid OTP" });
     if (otpEntry.expiresAt < new Date()) {

@@ -1,9 +1,27 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import { FaShoppingCart, FaSearch } from 'react-icons/fa';
+import { FaShoppingCart, FaSearch, FaUser } from "react-icons/fa";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
+  const [isLoggedIn, setisLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const loginStatus = localStorage.getItem("isLoggedIn");
+    const storedName = localStorage.getItem("userName");
+    setisLoggedIn(loginStatus == "true");
+    if (storedName) setUserName(storedName);
+  }, []);
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userName");
+    setisLoggedIn(false);
+    setUserName("");
+    navigate("/login");
+  };
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
       <div className="container-fluid px-4">
@@ -12,14 +30,22 @@ const Navbar = () => {
         </Link>
 
         {/* Mobile Toggle Button */}
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarContent"
+        >
           <span className="navbar-toggler-icon"></span>
         </button>
 
         {/* Navbar Links */}
         <div className="collapse navbar-collapse" id="navbarContent">
           {/* Search Bar */}
-          <form className="d-flex mx-auto my-2 my-lg-0" style={{ maxWidth: '400px', width: '100%' }}>
+          <form
+            className="d-flex mx-auto my-2 my-lg-0"
+            style={{ maxWidth: "400px", width: "100%" }}
+          >
             <input
               className="form-control me-2"
               type="search"
@@ -34,22 +60,59 @@ const Navbar = () => {
           {/* Nav Links */}
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-3">
             <li className="nav-item">
-              <Link className="nav-link" to="/">Home</Link>
+              <Link className="nav-link" to="/">
+                Home
+              </Link>
             </li>
 
             <li className="nav-item">
-              <Link className="nav-link" to="/product">Products</Link>
+              <Link className="nav-link" to="/product">
+                Products
+              </Link>
             </li>
 
             <li className="nav-item">
-              <Link className="nav-link" to="/profile">Categories</Link>
+              <Link className="nav-link" to="/profile">
+                Categories
+              </Link>
             </li>
-
-            <li className="nav-item">
-              <Link className="nav-link" to="/login">Login</Link>
-
-            </li>
-
+            {!isLoggedIn ? (
+              <li className="nav-item">
+                <Link className="nav-link" to="/login" onClick={handleLogout}>
+                  Login
+                </Link>
+              </li>
+            ) : (
+              <>
+                <li className="nav-item dropdown">
+                  <span
+                    className="nav-link dropdown-toggle"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <FaUser className="me-1" />
+                    {userName || "User"}
+                  </span>
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <Link className="dropdown-item" to="/profile">
+                        👤 Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        className="dropdown-item text-danger"
+                        to="/login"
+                        onClick={handleLogout}
+                      >
+                        🚪 Logout
+                      </Link>
+                    </li>
+                  </ul>
+                </li>
+              </>
+            )}
             {/* Cart Icon */}
             <li className="nav-item">
               <Link className="nav-link position-relative" to="/cart">

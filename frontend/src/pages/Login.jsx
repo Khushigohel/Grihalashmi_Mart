@@ -2,8 +2,47 @@ import React, { useState } from "react";
 import "../css/Login.css";
 import Navbar from "../components/Navbar";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { handleError, handleSucess } from "./utils";
+import axios from "axios";
+import { useNavigate } from "react-router";
+import { ToastContainer } from "react-toastify";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loginformData, setLoginformData] = useState({
+    email: "",
+    password: "",
+  });
+  const navigate = useNavigate();
+  const handleChange = (e) => {
+    setLoginformData({ ...loginformData, [e.target.name]: e.target.value });
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const { email, password } = loginformData;
+    if (!email || !password) {
+      return handleError("Email and Password is Required..");
+    }
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/web/api/signIn",
+        loginformData
+      );
+      if (response.data.success) {
+        localStorage.setItem("isLoggedIn", true);
+        localStorage.setItem("userName", response.data.fname);
+        handleSucess("Login Sucessfully");
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      } else {
+        handleError(response.data.message || "Signup failed");
+      }
+    } catch (error) {
+      handleError("Something want to wrong");
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -16,8 +55,7 @@ const Login = () => {
             Login to Gruhalakshmi Mart
           </h4>
 
-          <form>
-            {/* Email */}
+          <form onSubmit={handleLogin}>
             <div className="mb-3">
               <label htmlFor="email" className="form-label">
                 Email address
@@ -25,12 +63,12 @@ const Login = () => {
               <input
                 type="email"
                 className="form-control"
-                id="email"
+                name="email"
+                value={loginformData.email}
+                onChange={handleChange}
                 placeholder="Enter your email"
               />
             </div>
-
-            {/* Password */}
 
             <div className="mb-3" style={{ position: "relative" }}>
               <label htmlFor="password" className="form-label">
@@ -39,7 +77,9 @@ const Login = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 className="form-control"
-                id="password"
+                name="password"
+                value={loginformData.password}
+                onChange={handleChange}
                 placeholder="Enter your password"
               />
               <span
@@ -71,6 +111,7 @@ const Login = () => {
               <a href="/forgot-password">Forgot Password</a>
             </p>
           </form>
+          <ToastContainer />
         </div>
       </div>
     </>

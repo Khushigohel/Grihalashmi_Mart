@@ -28,7 +28,7 @@ router.post("/signUp", async (req, res) => {
     res.status(500).json({ message: "Server error during Signup" });
   }
 });
-router.get("/signIn", async (req, res) => {
+router.post("/signIn", async (req, res) => {
   const { email, password } = req.body;
   try {
     const userLogin = await User.findOne({ email });
@@ -36,7 +36,7 @@ router.get("/signIn", async (req, res) => {
       console.log("User is not found", email);
       return res.status(404).json({
         success: false,
-        message: "User is not Avaiable",
+        message: "User is not Avaiable Please register.",
       });
     }
     const isPasswordEqual = await bcrypt.compare(password, userLogin.password);
@@ -50,14 +50,15 @@ router.get("/signIn", async (req, res) => {
     console.log("Password is Match");
     res.status(200).json({
       success: true,
+      fname: userLogin.fname,
       message: "Login Successfully..",
     });
   } catch (error) {
-    console.log("Login Error", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error during login",
-    });
+    if (error.response && error.response.data && error.response.data.message) {
+      handleError(error.response.data.message);
+    } else {
+      handleError("Something went wrong. Try again later.");
+    }
   }
 });
 
