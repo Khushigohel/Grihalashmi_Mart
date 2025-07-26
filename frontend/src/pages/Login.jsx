@@ -30,6 +30,7 @@ const Login = () => {
       );
       if (response.data.success) {
         localStorage.setItem("isLoggedIn", true);
+        localStorage.setItem("token",response.data.token)
         localStorage.setItem("userName", response.data.fname);
         handleSucess("Login Sucessfully");
         setTimeout(() => {

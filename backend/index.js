@@ -13,6 +13,9 @@ app.use("/web/api/", userRoutes);
 const authRoutes = require("./router/web/auth");
 app.use("/web/api/", authRoutes);
 
+const userProfile=require("./router/web/profileRoutes");
+app.use("/web/api/",userProfile);
+
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,

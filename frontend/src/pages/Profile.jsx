@@ -1,9 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../css/Profile.css'
 import Navbar from '../components/Navbar';
+import axios from 'axios';
+import { handleError } from './utils';
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState('profile');
+
+  useEffect(()=>{
+    const fetchProfile=async () =>{
+      const token=localStorage.getItem("token");
+      try {
+        const res=await axios.get("http://localhost:5000/web/api/getProfile",{
+          "headers":{Authorization:`Bearer ${token}`}
+        });
+        console.log("Profile",res.data.user);
+        
+      } catch (error) {
+        handleError("Not Authorized..");
+      }
+    }
+    fetchProfile();
+  },[]);
 
   return (
     <>
@@ -25,10 +43,7 @@ const Profile = () => {
           <div className="col-md-9 bg-white p-4 shadow-sm rounded">
             {activeTab === 'profile' && (
               <div>
-                <h4 className="mb-4">Profile Information</h4>
-                <p><strong>Name:</strong> Khushi Gohel</p>
-                <p><strong>Email:</strong> khushi@example.com</p>
-                <p><strong>Phone:</strong> +91 9876543210</p>
+                
               </div>
             )}
             {activeTab === 'orders' && (
