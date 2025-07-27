@@ -1,7 +1,7 @@
 import React from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import Footer from "./Footer";
-import "../css/product.css";
+import "../../css/product.css";
 
 function Product() {
   const products = [

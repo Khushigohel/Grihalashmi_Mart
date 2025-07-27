@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { handleError, handleSucess } from "./utils";
 import { useNavigate } from "react-router-dom";

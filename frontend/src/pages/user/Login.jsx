@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "../css/Login.css";
-import Navbar from "../components/Navbar";
+import "../../css/Login.css";
+import Navbar from "../../components/Navbar";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { handleError, handleSucess } from "./utils";
 import axios from "axios";
@@ -29,8 +29,8 @@ const Login = () => {
         loginformData
       );
       if (response.data.success) {
-        localStorage.setItem("isLoggedIn", true);
-        localStorage.setItem("token",response.data.token)
+        localStorage.setItem("isLoggedIn", JSON.stringify(true));
+        console.log(localStorage.setItem("token",response.data.token));
         localStorage.setItem("userName", response.data.fname);
         handleSucess("Login Sucessfully");
         setTimeout(() => {
