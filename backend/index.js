@@ -13,6 +13,9 @@ app.use("/web/api/", userRoutes);
 const authRoutes = require("./router/web/auth");
 app.use("/web/api/", authRoutes);
 
+const adminRoutes = require("./router/admin/adminRoutes"); 
+app.use("/api/admin", adminRoutes); 
+
 const userProfile=require("./router/web/profileRoutes");
 app.use("/web/api/",userProfile);
 
