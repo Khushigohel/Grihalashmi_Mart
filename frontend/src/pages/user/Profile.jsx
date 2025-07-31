@@ -7,6 +7,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
+  const [showAddressForm, setShowAddressForm] = useState(false);
 
   // Fetch user profile on component mount
   useEffect(() => {
@@ -155,21 +156,53 @@ const Profile = () => {
               </div>
             )}
 
-            {activeTab === "address" && (
-              <div
-                className="d-flex flex-column align-items-center justify-content-center"
-                style={{ minHeight: "400px" }}
-              >
-                <img
-                  src="https://img.freepik.com/premium-vector/delivery-service-courier-employee-worker-feeling-clueless-puzzled-confused-have-no-idea-address_199628-462.jpg"
-                  alt="No Address"
-                  style={{ width: "350px", marginBottom: "0px" }}
-                />
-                <h5>No Addresses found in your account!</h5>
-                <p className="text-muted mb-3">Add a delivery address.</p>
-                <button className="btn btn-primary">ADD ADDRESSES</button>
-              </div>
-            )}
+{activeTab === "address" && (
+  <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: "400px" }}>
+    <img
+      src="https://img.freepik.com/premium-vector/delivery-service-courier-employee-worker-feeling-clueless-puzzled-confused-have-no-idea-address_199628-462.jpg"
+      alt="No Address"
+      style={{ width: "350px", marginBottom: "0px" }}
+    />
+    <h5>No Addresses found in your account!</h5>
+    <p className="text-muted mb-3">Add a delivery address.</p>
+    
+    {/* 👇 Add Address Button */}
+    {!showAddressForm && (
+      <button className="btn btn-primary" onClick={() => setShowAddressForm(true)}>
+        ADD ADDRESSES
+      </button>
+    )}
+
+    {/* 👇 Show Form if button is clicked */}
+    {showAddressForm && (
+      <div className="w-100 p-4" style={{ maxWidth: "500px" }}>
+        <h5>Add New Address</h5>
+        <form>
+          <div className="mb-2">
+            <input type="text" className="form-control" placeholder="Full Name" />
+          </div>
+          <div className="mb-2">
+            <input type="text" className="form-control" placeholder="Phone Number" />
+          </div>
+          <div className="mb-2">
+            <textarea className="form-control" placeholder="Address" rows="3"></textarea>
+          </div>
+          <div className="mb-2">
+            <input type="text" className="form-control" placeholder="Pincode" />
+          </div>
+          <div className="mb-2">
+            <input type="text" className="form-control" placeholder="City" />
+          </div>
+          <div className="d-flex justify-content-between">
+            <button type="submit" className="btn btn-success">Save Address</button>
+            <button type="button" className="btn btn-secondary" onClick={() => setShowAddressForm(false)}>Cancel</button>
+          </div>
+        </form>
+      </div>
+    )}
+  </div>
+)}
+
           </div>
         </div>
       </div>
