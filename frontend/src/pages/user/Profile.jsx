@@ -9,6 +9,60 @@ const Profile = () => {
   const [error, setError] = useState("");
   const [showAddressForm, setShowAddressForm] = useState(false);
 
+  const [addressForm, setAddressForm] = useState({
+    fullName: "",
+    phoneNumber: "",
+    address: "",
+    pincode: "",
+    city: "",
+    state: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAddressForm({ ...addressForm, [name]: value });
+  };
+  const handleAddressSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login first.");
+        return;
+      }
+
+      // Assuming backend expects userId from JWT or token decode
+      const res = await axios.post(
+        "http://localhost:5000/api/addresses",
+        {
+          userId: user._id, // 👈 using profile userId
+          ...addressForm,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.data.message) {
+        alert("Address saved successfully!");
+        setShowAddressForm(false);
+        setAddressForm({
+          fullName: "",
+          phoneNumber: "",
+          address: "",
+          pincode: "",
+          city: "",
+          state: "",
+        });
+      }
+    } catch (err) {
+      console.error("Error saving address:", err);
+      alert("Failed to save address");
+    }
+  };
+
   // Fetch user profile on component mount
   useEffect(() => {
     const fetchProfile = async () => {
@@ -156,53 +210,106 @@ const Profile = () => {
               </div>
             )}
 
-{activeTab === "address" && (
-  <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: "400px" }}>
-    <img
-      src="https://img.freepik.com/premium-vector/delivery-service-courier-employee-worker-feeling-clueless-puzzled-confused-have-no-idea-address_199628-462.jpg"
-      alt="No Address"
-      style={{ width: "350px", marginBottom: "0px" }}
-    />
-    <h5>No Addresses found in your account!</h5>
-    <p className="text-muted mb-3">Add a delivery address.</p>
-    
-    {/* 👇 Add Address Button */}
-    {!showAddressForm && (
-      <button className="btn btn-primary" onClick={() => setShowAddressForm(true)}>
-        ADD ADDRESSES
-      </button>
-    )}
+            {activeTab === "address" && (
+              <div
+                className="d-flex flex-column align-items-center justify-content-center"
+                style={{ minHeight: "400px" }}
+              >
+                <img
+                  src="https://img.freepik.com/premium-vector/delivery-service-courier-employee-worker-feeling-clueless-puzzled-confused-have-no-idea-address_199628-462.jpg"
+                  alt="No Address"
+                  style={{ width: "350px", marginBottom: "0px" }}
+                />
+                <h5>No Addresses found in your account!</h5>
+                <p className="text-muted mb-3">Add a delivery address.</p>
 
-    {/* 👇 Show Form if button is clicked */}
-    {showAddressForm && (
-      <div className="w-100 p-4" style={{ maxWidth: "500px" }}>
-        <h5>Add New Address</h5>
-        <form>
-          <div className="mb-2">
-            <input type="text" className="form-control" placeholder="Full Name" />
-          </div>
-          <div className="mb-2">
-            <input type="text" className="form-control" placeholder="Phone Number" />
-          </div>
-          <div className="mb-2">
-            <textarea className="form-control" placeholder="Address" rows="3"></textarea>
-          </div>
-          <div className="mb-2">
-            <input type="text" className="form-control" placeholder="Pincode" />
-          </div>
-          <div className="mb-2">
-            <input type="text" className="form-control" placeholder="City" />
-          </div>
-          <div className="d-flex justify-content-between">
-            <button type="submit" className="btn btn-success">Save Address</button>
-            <button type="button" className="btn btn-secondary" onClick={() => setShowAddressForm(false)}>Cancel</button>
-          </div>
-        </form>
-      </div>
-    )}
-  </div>
-)}
+                {!showAddressForm && (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => setShowAddressForm(true)}
+                  >
+                    ADD ADDRESSES
+                  </button>
+                )}
 
+                {showAddressForm && (
+                  <div className="w-100 p-4" style={{ maxWidth: "500px" }}>
+                    <h5>Add New Address</h5>
+                    <form>
+                      <div className="mb-2">
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="fullName"
+                          value={addressForm.fullName}
+                          placeholder="Full Name"
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <input
+                          type="text"
+                          name="phoneNumber"
+                          value={addressForm.phoneNumber}
+                          className="form-control"
+                          placeholder="Phone Number"
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <textarea
+                          className="form-control"
+                          placeholder="Address"
+                          value={addressForm.address}
+                          name="Address"
+                          rows="3"
+                        ></textarea>
+                      </div>
+                      <div className="mb-2">
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="Pincode"
+                          value={addressForm.pincode}
+                          placeholder="Pincode"
+                        />
+                      </div>
+                      <div className="mb-2 row">
+                        <div className="col">
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="City"
+                            value={addressForm.city}
+                            placeholder="City"
+                          />
+                        </div>
+                        <div className="col">
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="State"
+                            value={addressForm.state}
+                            placeholder="State"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="d-flex justify-content-between ">
+                        <button type="submit" className="btn  btn-primary ">
+                          Save Address
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-danger"
+                          onClick={() => setShowAddressForm(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -19,6 +19,9 @@ app.use("/api/admin", adminRoutes);
 const userProfile=require("./router/web/profileRoutes");
 app.use("/web/api/",userProfile);
 
+const addressRoutes = require("./routes/addressRoutes");
+app.use("/api/addresses", addressRoutes);
+
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
