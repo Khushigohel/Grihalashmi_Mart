@@ -3,8 +3,8 @@ const router=express.Router();
 
 router.post("/",async(req,res)=>{
     try {
-        const {userId,FullName,PhoneNumber,Address,Pincode,City,State}=req.body;
-        const newAddress = new Address({ userId,FullName , PhoneNumber, Address, Pincode, City,State });
+        const {userId,fullName,phoneNumber,Address,Pincode,City,State}=req.body;
+        const newAddress = new Address({ userId,fullName , phoneNumber, Address, Pincode, City,State });
         await newAddress.save();
 
         res.status(201).json({message:"Address Saved Sucessfully" ,address:newAddress})

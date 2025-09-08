@@ -7,6 +7,19 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
+  const [showAddressForm, setShowAddressForm] = useState(false);
+
+  const [addressData,setAddressData]=useState({
+    fullName:"",
+    phoneNumber:"",
+    Address:"",
+    Pincode:"",
+    City:"",
+    State:""
+  });
+  const handleChange=(e)=>{
+    setAddressData({...addressData,[e.target.name]:e.target.value})
+  }
 
   // Fetch user profile on component mount
   useEffect(() => {
@@ -70,25 +83,22 @@ const Profile = () => {
             </div>
             <ul className="list-group">
               <li
-                className={`list-group-item ${
-                  activeTab === "profile" ? "active" : ""
-                }`}
+                className={`list-group-item ${activeTab === "profile" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("profile")}
               >
                 Profile Information
               </li>
               <li
-                className={`list-group-item ${
-                  activeTab === "orders" ? "active" : ""
-                }`}
+                className={`list-group-item ${activeTab === "orders" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("orders")}
               >
                 My Orders
               </li>
               <li
-                className={`list-group-item ${
-                  activeTab === "address" ? "active" : ""
-                }`}
+                className={`list-group-item ${activeTab === "address" ? "active" : ""
+                  }`}
                 onClick={() => setActiveTab("address")}
               >
                 Saved Addresses
@@ -167,13 +177,51 @@ const Profile = () => {
                 />
                 <h5>No Addresses found in your account!</h5>
                 <p className="text-muted mb-3">Add a delivery address.</p>
-                <button className="btn btn-primary">ADD ADDRESSES</button>
+                {!showAddressForm && (
+                  <button className="btn btn-primary" onClick={() => setShowAddressForm(true)} > ADD ADDRESSES </button>
+                )}
+                {showAddressForm && (<div className="w-100 p-4" style={{ maxWidth: "500px" }}>
+                  <h5>Add New Address</h5>
+                  <form>
+                    <div className="mb-2">
+                        <input type="text" className="form-control" name="fullName" placeholder="Full Name" />
+                    </div>
+                    <div className="mb-2">
+                      <input type="text" name="phoneNumber" className="form-control" placeholder="Phone Number" value={addressData.fullName} 
+                      onChange={handleChange}/>
+                    </div>
+                    <div className="mb-2">
+                      <textarea className="form-control" placeholder="Address" name="Address" rows="3" value={addressData.Address} 
+                      onChange={handleChange}></textarea>
+                    </div>
+                    <div className="mb-2">
+                      <input type="text" className="form-control" name="Pincode" placeholder="Pincode" value={addressData.Pincode}
+                      onChange={handleChange}/>
+                    </div>
+                    <div className="mb-2 row">
+                      <div className="col">
+                        <input type="text" className="form-control" name="City" placeholder="City"  value={addressData.City}
+                        onChange={handleChange}/>
+                      </div>
+                      <div className="col">
+                        <input type="text" className="form-control" name="State" placeholder="State" value={addressData.State} 
+                        onChange={handleChange}/>
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-between ">
+                      <button type="submit" className="btn btn-primary "> Save Address </button>
+                      <button type="button" className="btn btn-danger" onClick={() => setShowAddressForm(false)} > Cancel </button>
+                    </div>
+                  </form>
+                </div>
+                )}
               </div>
             )}
           </div>
         </div>
       </div>
     </>
+
   );
 };
 
