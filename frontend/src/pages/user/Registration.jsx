@@ -48,12 +48,14 @@ const Registration = () => {
         },
         import.meta.env.VITE_EMAILJS_PUBLIC_KEY
       )
-      .then(() => {
+      .then((response) => {
         setOtpSent(true);
         handleSucess("OTP sent to your email");
+        console.log(" OTP email sent!", response.status, response.text);
       })
       .catch(() => {
         handleError("Failed to send OTP");
+        console.error(" OTP email error:", err);
       });
   };
 

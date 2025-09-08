@@ -19,7 +19,7 @@ app.use("/api/admin", adminRoutes);
 const userProfile=require("./router/web/profileRoutes");
 app.use("/web/api/",userProfile);
 
-const addressRoutes = require("./routes/addressRoutes");
+const addressRoutes = require("./router/web/addressRoutes");
 app.use("/api/addresses", addressRoutes);
 
 mongoose
