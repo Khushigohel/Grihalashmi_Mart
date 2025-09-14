@@ -9,17 +9,72 @@ const Profile = () => {
   const [error, setError] = useState("");
   const [showAddressForm, setShowAddressForm] = useState(false);
 
-  const [addressData,setAddressData]=useState({
-    fullName:"",
-    phoneNumber:"",
-    Address:"",
-    Pincode:"",
-    City:"",
-    State:""
+  const [addressData, setAddressData] = useState({
+    fullName: "",
+    phoneNumber: "",
+    address: "",
+    Pincode: "",
+    City: "",
+    State: ""
   });
-  const handleChange=(e)=>{
-    setAddressData({...addressData,[e.target.name]:e.target.value})
+  const handleChange = (e) => {
+    setAddressData({ ...addressData, [e.target.name]: e.target.value })
   }
+  //  const handleSubmit=async(e)=>{
+  //   e.preventDefault();
+  //    if (!user?._id) {
+  //     alert("User not found. Please login again.");
+  //     return;
+  //   }
+  //    try {
+  //     const response = await axios.post("http://localhost:5000/api/address", {
+  //       userId: user._id,
+  //       ...addressData
+  //     });
+
+  //     console.log("Address saved:", response.data);
+  //     alert("Address saved successfully!");
+  //     setShowAddressForm(false);
+  //     setAddressData({ fullName:"", phoneNumber:"", street:"", Pincode:"", City:"", State:"" });
+
+  //   } catch (err) {
+  //     console.error("Error saving address:", err);
+  //     alert("Failed to save address. Try again.");
+  //   }
+
+  //  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!user?._id) {
+      alert("User not found. Please login again.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/address", {
+        userId: user._id,
+        ...addressData
+      });
+      //console.log("Address saved:", response.data);
+      alert("Address saved successfully!");
+      setShowAddressForm(false);
+      setAddressData({
+        fullName: "",
+        phoneNumber: "",
+        address: "",
+        Pincode: "",
+        City: "",
+        State: ""
+      });
+    } catch (err) {
+      console.error("Error saving address:", err.response?.data || err);
+      alert("Failed to save address. Check backend logs.");
+    }
+  };
+
+
+
 
   // Fetch user profile on component mount
   useEffect(() => {
@@ -182,30 +237,66 @@ const Profile = () => {
                 )}
                 {showAddressForm && (<div className="w-100 p-4" style={{ maxWidth: "500px" }}>
                   <h5>Add New Address</h5>
-                  <form>
+                  <form onSubmit={handleSubmit}>
                     <div className="mb-2">
-                        <input type="text" className="form-control" name="fullName" placeholder="Full Name" />
+                      <input
+                        type="text"
+                        name="fullName"
+                        placeholder="Full Name"
+                        className="form-control"
+                        value={addressData.fullName}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="mb-2">
-                      <input type="text" name="phoneNumber" className="form-control" placeholder="Phone Number" value={addressData.fullName} 
-                      onChange={handleChange}/>
+                      <input
+                        type="text"
+                        name="phoneNumber"
+                        placeholder="Phone Number"
+                        className="form-control"
+                        value={addressData.phoneNumber}
+                        onChange={handleChange} />
                     </div>
                     <div className="mb-2">
-                      <textarea className="form-control" placeholder="Address" name="Address" rows="3" value={addressData.Address} 
-                      onChange={handleChange}></textarea>
+                      <textarea
+                        name="address"
+                        placeholder="Address"
+                        className="form-control"
+                        rows="3"
+                        value={addressData.address}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="mb-2">
-                      <input type="text" className="form-control" name="Pincode" placeholder="Pincode" value={addressData.Pincode}
-                      onChange={handleChange}/>
+                      <input
+                        type="number"
+                        name="Pincode"
+                        placeholder="Pincode"
+                        className="form-control"
+                        value={addressData.Pincode}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="mb-2 row">
                       <div className="col">
-                        <input type="text" className="form-control" name="City" placeholder="City"  value={addressData.City}
-                        onChange={handleChange}/>
+                        <input
+                          type="text"
+                          name="City"
+                          placeholder="City"
+                          className="form-control"
+                          value={addressData.City}
+                          onChange={handleChange}
+                        />
                       </div>
                       <div className="col">
-                        <input type="text" className="form-control" name="State" placeholder="State" value={addressData.State} 
-                        onChange={handleChange}/>
+                        <input
+                          type="text"
+                          name="State"
+                          placeholder="State"
+                          className="form-control"
+                          value={addressData.State}
+                          onChange={handleChange}
+                        />
                       </div>
                     </div>
                     <div className="d-flex justify-content-between ">

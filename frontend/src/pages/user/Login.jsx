@@ -32,6 +32,7 @@ const Login = () => {
         localStorage.setItem("isLoggedIn", JSON.stringify(true));
         console.log(localStorage.setItem("token",response.data.token));
         localStorage.setItem("userName", response.data.fname);
+        localStorage.setItem("userId",response.data.userId);
         handleSucess("Login Sucessfully");
         setTimeout(() => {
           navigate("/");

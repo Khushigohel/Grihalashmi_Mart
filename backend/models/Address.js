@@ -10,10 +10,11 @@ const AddressSchema=new mongoose.Schema({
         required:true
     },
     phoneNumber:{
-        type:Number,
-        required:true
+        type: String,
+        required: true,
+        match: /^[0-9]{10,15}$/
     },
-    Address:{
+    address:{
         type:String,
         required:true
     },
@@ -23,11 +24,11 @@ const AddressSchema=new mongoose.Schema({
     },
     City:{
         type:String,
-        require:true
+        required:true
     },
     State:{
         type:String,
-        require:true
+        required:true
     }
 });
 module.exports=mongoose.model("Address",AddressSchema)

@@ -1,111 +1,64 @@
 const express = require("express");
 const router = express.Router();
 const crypto = require("crypto");
-const fetch = require("node-fetch");
 const bcrypt = require("bcryptjs");
-const User = require("../../models/User");
+
 const OtpStore = require("../../models/OtpStore");
+const User = require("../../models/User");
 
-
-const EMAILJS_SERVICE_ID = "service_eyc3wmd";
-const EMAILJS_TEMPLATE_ID = "template_fe5id9p";
-const EMAILJS_PUBLIC_KEY = "FapwK4xIgpqbQc_iN";
-
-// SEND OTP
 router.post("/send-otp", async (req, res) => {
   try {
     const { email } = req.body;
+    console.log("Received email:", email); // log
 
-    // 1. Check if user exists
+    if (!email) return res.status(400).json({ message: "Email required" });
+
     const user = await User.findOne({ email });
+    console.log("User found:", user); // log
+
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // 2. Generate OTP
     const otp = crypto.randomInt(100000, 999999).toString();
+    console.log("Generated OTP:", otp); // log
 
-    // 3. Store in DB with 20 mins expiry
     await OtpStore.create({
       email,
       otp,
       expiresAt: new Date(Date.now() + 20 * 60 * 1000),
     });
 
-    // 4. Send email via EmailJS
-    const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-      method: "POST",
-      headers: {
-        origin: "http://localhost",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        service_id: EMAILJS_SERVICE_ID,
-        template_id: EMAILJS_TEMPLATE_ID,
-        user_id: EMAILJS_PUBLIC_KEY,
-        template_params: {
-          email,
-          passcode: otp,
-          time: new Date().toLocaleTimeString(),
-        },
-      }),
-    });
+    return res.status(200).json({ message: "OTP generated", otp });
 
-    const result = await response.text();
-    console.log("EmailJS Response:", result);
-
-    if (!response.ok) {
-      return res.status(500).json({ message: "Failed to send OTP email" });
-    }
-
-    return res.status(200).json({ message: "OTP sent to your email" });
-  } catch (error) {
-    console.error("Error sending OTP:", error);
+  } catch (err) {
+    console.error("Error in /send-otp:", err);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-// VERIFY OTP
-router.post("/verify-otp", async (req, res) => {
-  try {
-    const { email, otp } = req.body;
-    const otpEntry = await OtpStore.findOne({ email, otp });
 
-    if (!otpEntry) return res.status(400).json({ message: "Invalid OTP" });
-    if (otpEntry.expiresAt < new Date()) {
-      return res.status(400).json({ message: "OTP expired" });
-    }
-
-    return res.status(200).json({ message: "OTP verified successfully" });
-  } catch (error) {
-    console.error("Error verifying OTP:", error);
-    return res.status(500).json({ message: "Server Error" });
-  }
-});
-
-// RESET PASSWORD
+// Reset password
 router.post("/reset-password", async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
     const otpEntry = await OtpStore.findOne({ email, otp });
 
     if (!otpEntry) return res.status(400).json({ message: "Invalid OTP" });
-    if (otpEntry.expiresAt < new Date()) {
-      return res.status(400).json({ message: "OTP expired" });
-    }
+    if (otpEntry.expiresAt < new Date()) return res.status(400).json({ message: "OTP expired" });
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+
     const user = await User.findOneAndUpdate(
       { email },
-      { password: hashedPassword },
-      { new: true }
+      { password: hashedPassword }
     );
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    await OTP.deleteOne({ _id: otpEntry._id });
-
+    await OtpStore.deleteOne({ _id: otpEntry._id });
     return res.status(200).json({ message: "Password reset successful" });
-  } catch (error) {
-    console.error("Error resetting password:", error);
+
+  } catch (err) {
+    console.error("Error in /reset-password:", err);
     return res.status(500).json({ message: "Server Error" });
   }
 });

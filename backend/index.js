@@ -20,7 +20,7 @@ const userProfile=require("./router/web/profileRoutes");
 app.use("/web/api/",userProfile);
 
 const addressRoutes = require("./router/web/addressRoutes");
-app.use("/api/addresses", addressRoutes);
+app.use("/api/address", addressRoutes);
 
 mongoose
   .connect(process.env.MONGO_URL, {
