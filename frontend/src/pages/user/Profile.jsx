@@ -8,6 +8,7 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [addresses, setAddresses] = useState([]);
 
   const [addressData, setAddressData] = useState({
     fullName: "",
@@ -17,46 +18,23 @@ const Profile = () => {
     City: "",
     State: ""
   });
+
   const handleChange = (e) => {
-    setAddressData({ ...addressData, [e.target.name]: e.target.value })
-  }
-  //  const handleSubmit=async(e)=>{
-  //   e.preventDefault();
-  //    if (!user?._id) {
-  //     alert("User not found. Please login again.");
-  //     return;
-  //   }
-  //    try {
-  //     const response = await axios.post("http://localhost:5000/api/address", {
-  //       userId: user._id,
-  //       ...addressData
-  //     });
+    setAddressData({ ...addressData, [e.target.name]: e.target.value });
+  };
 
-  //     console.log("Address saved:", response.data);
-  //     alert("Address saved successfully!");
-  //     setShowAddressForm(false);
-  //     setAddressData({ fullName:"", phoneNumber:"", street:"", Pincode:"", City:"", State:"" });
-
-  //   } catch (err) {
-  //     console.error("Error saving address:", err);
-  //     alert("Failed to save address. Try again.");
-  //   }
-
-  //  }
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!user?._id) {
       alert("User not found. Please login again.");
       return;
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/address", {
+      await axios.post("http://localhost:5000/api/address", {
         userId: user._id,
         ...addressData
       });
-      //console.log("Address saved:", response.data);
       alert("Address saved successfully!");
       setShowAddressForm(false);
       setAddressData({
@@ -67,35 +45,43 @@ const Profile = () => {
         City: "",
         State: ""
       });
+      fetchAddresses(); // refresh after adding
     } catch (err) {
       console.error("Error saving address:", err.response?.data || err);
       alert("Failed to save address. Check backend logs.");
     }
   };
 
+  const fetchAddresses = async () => {
+    if (!user?._id) return;
+    try {
+      const res = await axios.get(`http://localhost:5000/api/address/${user._id}`);
+      setAddresses(res.data.addresses || []);
+    } catch (err) {
+      console.error("Error fetching addresses:", err);
+    }
+  };
 
-
+  // Fetch addresses when user is loaded
+  useEffect(() => {
+    if (user?._id) fetchAddresses();
+  }, [user]);
 
   // Fetch user profile on component mount
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
-
       if (!token) {
         setError("Token not found. Please login again.");
         return;
       }
-
       try {
         const response = await axios.get(
           "http://localhost:5000/web/api/getProfile",
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-
         if (response.data.success) {
           setUser(response.data.user);
         } else {
@@ -108,16 +94,15 @@ const Profile = () => {
         } else {
           setError(err.response?.data?.message || "Something went wrong.");
         }
-        localStorage.removeItem("token"); // remove invalid token
+        localStorage.removeItem("token");
       }
     };
-
     fetchProfile();
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login"; // redirect to login page
+    window.location.href = "/login";
   };
 
   return (
@@ -138,30 +123,24 @@ const Profile = () => {
             </div>
             <ul className="list-group">
               <li
-                className={`list-group-item ${activeTab === "profile" ? "active" : ""
-                  }`}
+                className={`list-group-item ${activeTab === "profile" ? "active" : ""}`}
                 onClick={() => setActiveTab("profile")}
               >
                 Profile Information
               </li>
               <li
-                className={`list-group-item ${activeTab === "orders" ? "active" : ""
-                  }`}
+                className={`list-group-item ${activeTab === "orders" ? "active" : ""}`}
                 onClick={() => setActiveTab("orders")}
               >
                 My Orders
               </li>
               <li
-                className={`list-group-item ${activeTab === "address" ? "active" : ""
-                  }`}
+                className={`list-group-item ${activeTab === "address" ? "active" : ""}`}
                 onClick={() => setActiveTab("address")}
               >
                 Saved Addresses
               </li>
-              <li
-                className="list-group-item text-danger"
-                onClick={handleLogout}
-              >
+              <li className="list-group-item text-danger" onClick={handleLogout}>
                 Logout
               </li>
             </ul>
@@ -169,7 +148,8 @@ const Profile = () => {
 
           {/* Main Content */}
           <div className="col-md-9 bg-white p-4 shadow-sm rounded">
-            {activeTab === "profile" && (
+            {/* Profile Info */}
+  {activeTab === "profile" && (
               <div>
                 <h4 className="mb-4">Profile Information</h4>
                 {error && <p className="text-danger">{error}</p>}
@@ -213,6 +193,7 @@ const Profile = () => {
               </div>
             )}
 
+            {/* Orders */}
             {activeTab === "orders" && (
               <div>
                 <h4 className="mb-4">My Orders</h4>
@@ -220,91 +201,124 @@ const Profile = () => {
               </div>
             )}
 
+            {/* Saved Addresses */}
             {activeTab === "address" && (
-              <div
-                className="d-flex flex-column align-items-center justify-content-center"
-                style={{ minHeight: "400px" }}
-              >
-                <img
-                  src="https://img.freepik.com/premium-vector/delivery-service-courier-employee-worker-feeling-clueless-puzzled-confused-have-no-idea-address_199628-462.jpg"
-                  alt="No Address"
-                  style={{ width: "350px", marginBottom: "0px" }}
-                />
-                <h5>No Addresses found in your account!</h5>
-                <p className="text-muted mb-3">Add a delivery address.</p>
-                {!showAddressForm && (
-                  <button className="btn btn-primary" onClick={() => setShowAddressForm(true)} > ADD ADDRESSES </button>
-                )}
-                {showAddressForm && (<div className="w-100 p-4" style={{ maxWidth: "500px" }}>
-                  <h5>Add New Address</h5>
-                  <form onSubmit={handleSubmit}>
-                    <div className="mb-2">
-                      <input
-                        type="text"
-                        name="fullName"
-                        placeholder="Full Name"
-                        className="form-control"
-                        value={addressData.fullName}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="mb-2">
-                      <input
-                        type="text"
-                        name="phoneNumber"
-                        placeholder="Phone Number"
-                        className="form-control"
-                        value={addressData.phoneNumber}
-                        onChange={handleChange} />
-                    </div>
-                    <div className="mb-2">
-                      <textarea
-                        name="address"
-                        placeholder="Address"
-                        className="form-control"
-                        rows="3"
-                        value={addressData.address}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="mb-2">
-                      <input
-                        type="number"
-                        name="Pincode"
-                        placeholder="Pincode"
-                        className="form-control"
-                        value={addressData.Pincode}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="mb-2 row">
-                      <div className="col">
-                        <input
-                          type="text"
-                          name="City"
-                          placeholder="City"
-                          className="form-control"
-                          value={addressData.City}
-                          onChange={handleChange}
-                        />
-                      </div>
-                      <div className="col">
-                        <input
-                          type="text"
-                          name="State"
-                          placeholder="State"
-                          className="form-control"
-                          value={addressData.State}
-                          onChange={handleChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="d-flex justify-content-between ">
-                      <button type="submit" className="btn btn-primary "> Save Address </button>
-                      <button type="button" className="btn btn-danger" onClick={() => setShowAddressForm(false)} > Cancel </button>
-                    </div>
-                  </form>
+              <div>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h4>Saved Addresses</h4>
+                  {!showAddressForm && (
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => setShowAddressForm(true)}
+                    >
+                      + Add Address
+                    </button>
+                  )}
                 </div>
+
+                {/* Address List */}
+                {addresses.length > 0 ? (
+                  <div className="row">
+                    {addresses.map((addr, index) => (
+                      <div className="col-md-6 mb-3" key={index}>
+                        <div className="card p-3 shadow-sm">
+                          <h6><strong>Name:</strong>{addr.fullName}</h6>
+                          <p><strong>Phone:</strong> {addr.phoneNumber}</p>
+                          <p><strong>Street:</strong> {addr.address}</p>
+                          <p>
+                            <strong>City:</strong> {addr.City}, 
+                            <strong> State:</strong> {addr.State}
+                          </p>
+                          <p><strong>Pincode:</strong> {addr.Pincode}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted">No addresses saved yet.</p>
+                )}
+
+                {/* Address Form */}
+                {showAddressForm && (
+                  <div className="w-100 p-4" style={{ maxWidth: "500px" }}>
+                    <h5>Add New Address</h5>
+                    <form onSubmit={handleSubmit}>
+                      <div className="mb-2">
+                        <input
+                          type="text"
+                          name="fullName"
+                          placeholder="Full Name"
+                          className="form-control"
+                          value={addressData.fullName}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <input
+                          type="text"
+                          name="phoneNumber"
+                          placeholder="Phone Number"
+                          className="form-control"
+                          value={addressData.phoneNumber}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <textarea
+                          name="address"
+                          placeholder="streetb "
+                          className="form-control"
+                          rows="3"
+                          value={addressData.address}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <input
+                          type="number"
+                          name="Pincode"
+                          placeholder="Pincode"
+                          className="form-control"
+                          value={addressData.Pincode}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-2 row">
+                        <div className="col">
+                          <input
+                            type="text"
+                            name="City"
+                            placeholder="City"
+                            className="form-control"
+                            value={addressData.City}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="col">
+                          <input
+                            type="text"
+                            name="State"
+                            placeholder="State"
+                            className="form-control"
+                            value={addressData.State}
+                            onChange={handleChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="d-flex justify-content-between ">
+                        <button type="submit" className="btn btn-primary">
+                          Save Address
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-danger"
+                          onClick={() => setShowAddressForm(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 )}
               </div>
             )}
@@ -312,8 +326,21 @@ const Profile = () => {
         </div>
       </div>
     </>
-
   );
 };
 
 export default Profile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

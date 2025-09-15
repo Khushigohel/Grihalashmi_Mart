@@ -15,7 +15,7 @@ function ForgotPassword() {
 
   const EMAILJS_SERVICE_ID = "service_eyc3wmd";
   const EMAILJS_TEMPLATE_ID = "template_fe5id9p";
-  const EMAILJS_PUBLIC_KEY = "FapwK4xIgpqbQc_iN";
+  const EMAILJS_PUBLIC_KEY = "xx5TFWvvFNsmq31vL";
 
   const requestOtp = async (e) => {
     e.preventDefault();

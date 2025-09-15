@@ -9,17 +9,10 @@ const User = require("../../models/User");
 router.post("/send-otp", async (req, res) => {
   try {
     const { email } = req.body;
-    console.log("Received email:", email); // log
-
     if (!email) return res.status(400).json({ message: "Email required" });
-
     const user = await User.findOne({ email });
-    console.log("User found:", user); // log
-
     if (!user) return res.status(404).json({ message: "User not found" });
-
     const otp = crypto.randomInt(100000, 999999).toString();
-    console.log("Generated OTP:", otp); // log
 
     await OtpStore.create({
       email,
