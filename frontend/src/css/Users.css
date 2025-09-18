@@ -1,0 +1,60 @@
+.users-container {
+    padding: 25px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    min-height: 100vh;
+  }
+  
+  .users-container h2 {
+    color: #1e3c72;
+    margin-bottom: 20px;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  
+  .users-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .users-table th, .users-table td {
+    padding: 12px 15px;
+    text-align: left;
+  }
+  
+  .users-table th {
+    background-color: #e7ecf3;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .users-table tr:hover {
+    background-color: #f1f7ff;
+  }
+  
+  .delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .delete-btn:hover {
+    background-color: #a71d2a;
+  }
+  
+  .no-users {
+    text-align: center;
+    color: #555;
+    margin-top: 20px;
+  }
+  

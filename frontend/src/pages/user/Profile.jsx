@@ -119,7 +119,7 @@ const Profile = () => {
                 className="rounded-circle"
                 width="80"
               />
-              <h5 className="mt-2">Hello</h5>
+              <h5 className="mt-2">Hello </h5>
             </div>
             <ul className="list-group">
               <li
