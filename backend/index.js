@@ -22,6 +22,9 @@ app.use("/web/api/", userProfile);
 const addressRoutes = require("./router/web/addressRoutes");
 app.use("/api/address", addressRoutes);
 
+const cartRoutes=require("./router/web/cartRoutes");
+app.use("/api/cart",cartRoutes);
+
 
 //Admin Routes call here
 const adminRoutes = require("./router/admin/adminRoutes");

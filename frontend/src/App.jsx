@@ -7,6 +7,7 @@ import Category from "./pages/user/Category";
 import Product from "./pages/user/Product";
 import ForgotPassword from "./pages/user/ForgotPassword";
 import Profile from "./pages/user/Profile";
+import CartPage from "./pages/user/CartPage";
 
 import LoginAdmin from "./pages/admin/LoginAdmin";
 import Dashboard from "./pages/admin/Dashboard";
@@ -32,6 +33,7 @@ function App() {
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/products/:id" element={<ProductDetails />} />
+        <Route path="/cart" element={<CartPage/>}/>
 
         <Route path="/admin/loginadmin" element={<LoginAdmin />} />
         <Route

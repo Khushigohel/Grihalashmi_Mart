@@ -1,61 +1,51 @@
 /* Footer Section Styling */
 .footer-section {
-  background-color: #222;
-  color: #fff;
-  width: 100%; /* Ensures full width of the screen */
-  padding: 40px 0;
+  background-color: #0d1b2a; /* dark navy blue for a modern, clean look */
+  color: #f0f0f0; /* soft white text */
+  width: 100%;
+  padding: 50px 0;
   position: relative;
-  left: 0;
-  bottom: 0;
 }
 
-/* Ensures the content inside the footer stretches fully */
+/* Footer Container */
 .footer-container {
-  width: 100%; /* Takes full width of the screen */
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 0 20px;
 }
 
 /* Footer Links */
-.footer-links {
-  list-style: none;
-  padding: 0;
-}
-
-.footer-links li {
-  margin-bottom: 8px;
-}
-
 .footer-links a {
-  color: #bbb;
+  color: #cfd8dc; /* light gray links */
   text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 .footer-links a:hover {
-  color: #fff;
+  color: #007bff; /* your webapp blue on hover */
   text-decoration: underline;
 }
 
 /* Social Media Icons */
-.social-icons {
-  display: flex;
-  gap: 15px;
-}
-
 .social-icons a {
-  color: #bbb;
+  color: #cfd8dc;
   font-size: 1.5rem;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .social-icons a:hover {
-  color: #007bff;
+  color: #fff;
+  background-color: #007bff; /* blue circle background */
+  border-radius: 50%;
+  padding: 5px;
 }
 
-/* Footer Bottom (Copyright Section) */
+/* Footer Bottom */
 .footer-bottom {
-  background-color: #111;
+  background-color: #08182b; /* slightly darker than footer */
   text-align: center;
-  padding: 10px 0;
+  padding: 12px 0;
+  color: #b0bec5; /* muted text for copyright */
+  font-size: 0.9rem;
   margin-top: 20px;
-  width: 100%; /* Ensures full width */
 }

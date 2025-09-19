@@ -149,7 +149,7 @@ const Profile = () => {
           {/* Main Content */}
           <div className="col-md-9 bg-white p-4 shadow-sm rounded">
             {/* Profile Info */}
-  {activeTab === "profile" && (
+            {activeTab === "profile" && (
               <div>
                 <h4 className="mb-4">Profile Information</h4>
                 {error && <p className="text-danger">{error}</p>}
@@ -226,7 +226,7 @@ const Profile = () => {
                           <p><strong>Phone:</strong> {addr.phoneNumber}</p>
                           <p><strong>Street:</strong> {addr.address}</p>
                           <p>
-                            <strong>City:</strong> {addr.City}, 
+                            <strong>City:</strong> {addr.City},
                             <strong> State:</strong> {addr.State}
                           </p>
                           <p><strong>Pincode:</strong> {addr.Pincode}</p>
@@ -343,4 +343,4 @@ export default Profile;
 
 
 
- 
+

@@ -4,12 +4,17 @@ import Navbar from "../../components/Navbar";
 import Footer from "./Footer";
 import axios from "axios";
 import "../../css/productDetails.css";
+import { useCart } from "../../context/CartContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function ProductDetails() {
-   const { id } = useParams();
+  const { id } = useParams();
   const [product, setProduct] = useState(null);
+   const { addToCart } = useCart();
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(`http://localhost:5000/api/products/${id}`);
@@ -20,6 +25,22 @@ function ProductDetails() {
     };
     fetchProduct();
   }, [id]);
+
+  const handleAddToCart = async () => {
+    try {
+      await addToCart(product._id, 1);
+      toast.success("Product added to cart!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to add product to cart.", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    }
+  };
 
   if (!product) {
     return <h3 className="text-center">Loading product details...</h3>;
@@ -58,13 +79,24 @@ function ProductDetails() {
           </p>
 
           <p className="description">{product.description}</p>
-
-          <div className="btn-group">
-            <button className="btn-add">Add to Cart</button>
-            <button className="btn-buy">Buy Now</button>
+          <div className="offers">
+            <h4>Available Offers</h4>
+            <ul>
+              <li>💰 Cashback up to ₹50 on UPI payments</li>
+              <li>🚚 Free Delivery on orders above ₹499</li>
+              <li>🔒 Secure transaction</li>
+            </ul>
           </div>
+
+          <div className="action-buttons">
+            {/* <button className="add-to-cart"  onClick={() => addToCart(product._id, 1)}>Add to Cart</button> */}
+            <button className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
+            <button className="buy-now">Buy Now</button>
+          </div>
+
         </div>
       </div>
+      <ToastContainer/>
       <Footer />
     </>
   );

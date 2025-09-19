@@ -59,7 +59,7 @@
 .product-price {
   font-size: 16px;
   font-weight: bold;
-  color: #007bff;
+  color: #4052b7;
   margin: 8px 0;
 }
 
@@ -79,34 +79,10 @@
 }
 
 .view-btn {
-  background: #007bff;
+  background: #4052b7;
   color: white;
 }
 
 .view-btn:hover {
   background: #0056b3;
-}
-
-.buy-btn {
-  background: #28a745;
-  color: white;
-}
-
-.buy-btn:hover {
-  background: #1e7e34;
-}
-
-.cart-btn {
-  background: #ffc107;
-  color: black;
-}
-
-.cart-btn:hover {
-  background: #e0a800;
-}
-
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
 }

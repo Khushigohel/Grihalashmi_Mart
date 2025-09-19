@@ -46,27 +46,68 @@
   line-height: 1.6;
 }
 
-.btn-group {
+.action-buttons {
+  margin-top: 20px;
   display: flex;
   gap: 15px;
-  margin-top: 20px;
 }
 
-.btn-add {
-  background: orange;
-  padding: 12px 20px;
+.add-to-cart {
+  background: linear-gradient(90deg, #1d4ed8, #8c8d8f);
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  padding: 12px 20px;
   font-size: 16px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  color:#fff;
+  transition: 0.3s;
 }
 
-.btn-buy {
-  background: #ff3d00;
-  padding: 12px 20px;
+.add-to-cart:hover {
+  background: linear-gradient(90deg, #9a4, #8c8d8f);
+  color: black;
+}
+
+.buy-now {
+  background: linear-gradient(90deg, #153eaa, #8c8d8f);
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  padding: 12px 20px;
   font-size: 16px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
   color: white;
+}
+
+.buy-now:hover {
+   background: linear-gradient(90deg, #9a4, #8c8d8f);
+   color: black;
+}
+
+.loading {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 20px;
+}
+.offers {
+  background: #f3f3f3;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.offers h4 {
+  margin-bottom: 10px;
+  color: #b12704;
+}
+
+.offers ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.offers li {
+  margin: 5px 0;
 }

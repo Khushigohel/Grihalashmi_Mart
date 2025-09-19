@@ -3,11 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { FaShoppingCart, FaSearch, FaUser } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import { useCart } from "../context/CartContext";
 
 const Navbar = () => {
   const [isLoggedIn, setisLoggedIn] = useState(false);
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
+    const { cartCount } = useCart();
+
 
   useEffect(() => {
     const loginStatus = localStorage.getItem("isLoggedIn");
@@ -25,7 +28,7 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
       <div className="container-fluid px-4">
-        <Link className="navbar-brand fw-bold text-primary" to="/">
+        <Link className="navbar-brand fw-bold" style={{ color:"#4052b7" }}  to="/">
           Gruhalakshmi Mart
         </Link>
 
@@ -118,7 +121,7 @@ const Navbar = () => {
               <Link className="nav-link position-relative" to="/cart">
                 <FaShoppingCart size={18} />
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  0
+                  {cartCount}
                 </span>
               </Link>
             </li>
