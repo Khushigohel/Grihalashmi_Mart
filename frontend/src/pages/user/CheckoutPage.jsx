@@ -189,7 +189,7 @@ const CheckoutPage = () => {
                         </div>
 
                         {!selectedAddress && !addingNewAddress && (
-                            <button className="btn primary-btn w-100 my-3" onClick={() => setShowAddressForm(true)}>Select Delivery Address</button>
+                            <button className="btn primary-btn w-100 my-3" style={{background: "#4052b7", color: "#fff" }} onClick={() => setShowAddressForm(true)}>Select Delivery Address</button>
                         )}
                         {/* Selected Address */}
                         {selectedAddress && (
