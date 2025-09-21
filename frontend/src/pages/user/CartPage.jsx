@@ -4,7 +4,7 @@ import Navbar from "../../components/Navbar";
 import "../../css/cartPage.css";
 import { FiShoppingCart } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import Footer from './Footer';
+
 
 const CartPage = () => {
   const { cart, loading, updateQuantity, removeFromCart } = useCart();
@@ -31,16 +31,21 @@ const CartPage = () => {
       alert('Could not remove');
     }
   };
-
-  // Checkout a single product
-  const checkoutProduct = (productId, quantity) => {
-    navigate("/checkout", { state: { cart: { products: [{ productId, quantity }] } } });
-  };
-
   // Checkout all products
   const checkoutAll = () => {
-    navigate("/checkout", { state: { cart } });
+    navigate("/checkout", {
+      state: { cart }  // pass the whole cart
+    });
   };
+  // Checkout a single product
+  const checkoutProduct = (productId, quantity) => {
+    navigate("/checkout", {
+      state: {
+        cart: { products: [{ productId, quantity }] }
+      },
+    });
+  };
+
 
   if (loading) return <div className="loading">Loading...</div>;
 
@@ -106,7 +111,7 @@ const CartPage = () => {
           </div>
         )}
       </div>
-      <Footer/>
+
     </>
   );
 };

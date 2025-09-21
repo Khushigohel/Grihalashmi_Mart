@@ -9,6 +9,7 @@ const Profile = () => {
   const [error, setError] = useState("");
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addresses, setAddresses] = useState([]);
+  const [hover, setHover] = useState(false);
 
   const [addressData, setAddressData] = useState({
     fullName: "",
@@ -306,12 +307,18 @@ const Profile = () => {
                         </div>
                       </div>
                       <div className="d-flex justify-content-between ">
-                        <button type="submit" className="btn btn-primary">
+                        <button type="submit" style={{
+                          background: hover ? "#6f7bc0ff" : "#2e3ca6",
+                          color: "#fff",
+                          transition: "background 0.3s"
+                        }}
+                          onMouseEnter={() => setHover(true)}
+                          onMouseLeave={() => setHover(false)}>
+
                           Save Address
                         </button>
                         <button
-                          type="button"
-                          className="btn btn-danger"
+                          type="button" style={{ background: "#c52e10ff", color: "#fff" }}
                           onClick={() => setShowAddressForm(false)}
                         >
                           Cancel

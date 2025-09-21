@@ -25,6 +25,9 @@ app.use("/api/address", addressRoutes);
 const cartRoutes=require("./router/web/cartRoutes");
 app.use("/api/cart",cartRoutes);
 
+const checkoutRoutes=require("./router/web/checkoutRoutes")
+app.use("/api/checkout",checkoutRoutes);
+
 
 //Admin Routes call here
 const adminRoutes = require("./router/admin/adminRoutes");
@@ -38,6 +41,8 @@ app.use("/api/orders", orderRoutes);
 
 const adminStats = require("./router/admin/adminStats");
 app.use("/api/admin/stats", adminStats);
+
+
 
 mongoose
   .connect(process.env.MONGO_URL, {

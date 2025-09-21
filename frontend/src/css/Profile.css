@@ -14,32 +14,4 @@
   .profile-sidebar .list-group-item:hover {
     background-color: #e3f2fd;
   }
-  .custom-save-btn {
-    background-color: #4052b7;
-    color: white;
-    font-weight: 500;
-    padding: 8px 20px;
-    border-radius: 5px;
-    border: none;
-    transition: 0.3s ease;
-  }
-  
-  .custom-save-btn:hover {
-    background-color: #1a5fc4;
-  }
-  
-  
-  .custom-cancel-btn {
-    background-color: #f05028;
-    color: white;
-    font-weight: 500;
-    padding: 8px 20px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .custom-cancel-btn:hover {
-    background-color: #f1896f;
-    color: black;
-  }
   
