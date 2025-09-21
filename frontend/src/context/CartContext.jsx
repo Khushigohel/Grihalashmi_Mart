@@ -68,10 +68,10 @@ const removeFromCart = async (productId) => {
 };
 // Inside CartContext.jsx
 const cartCount = cart?.products?.reduce((acc, item) => acc + item.quantity, 0) || 0;
-
+const clearCart = () => setCart({ products: [] });
 
   return (
-    <CartContext.Provider value={{ cart, loading, addToCart, fetchCart,updateQuantity,removeFromCart,cartCount }}>
+    <CartContext.Provider value={{ cart, loading, addToCart, fetchCart,updateQuantity,removeFromCart,cartCount,clearCart }}>
       {children}
     </CartContext.Provider>
   );

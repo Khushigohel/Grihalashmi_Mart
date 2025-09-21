@@ -9,7 +9,7 @@ const Navbar = () => {
   const [isLoggedIn, setisLoggedIn] = useState(false);
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
-    const { cartCount } = useCart();
+    const { cartCount,clearCart } = useCart();
 
 
   useEffect(() => {
@@ -23,6 +23,7 @@ const Navbar = () => {
     localStorage.removeItem("userName");
     setisLoggedIn(false);
     setUserName("");
+    clearCart();
     navigate("/login");
   };
   return (
