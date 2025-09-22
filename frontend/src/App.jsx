@@ -19,7 +19,9 @@ import Orders from "./pages/admin/Orders";
 import Payments from "./pages/admin/Payments";
 import Users from "./pages/admin/Users";
 import ProductDetails from "./pages/user/ProductDetails";
-import CheckoutPage from "./pages/user/checkoutPage";
+import CheckoutPage from "./pages/user/CheckoutPage";
+import OrderSuccess from "./pages/user/OrderSuccess ";
+import MyOrders from "./pages/user/MyOrder";
 
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<CartPage/>}/>
         <Route path="/checkout" element={<CheckoutPage/>}/>
+        <Route path="/order-success" element={<OrderSuccess/>}/>
+        <Route path="/my-order" element={<MyOrders/>}/>
 
         <Route path="/admin/loginadmin" element={<LoginAdmin />} />
         <Route

@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
-    // State
-    const [productItems, setProductItems] = useState([]);
     const location = useLocation();
+
+    // States
+    const [productItems, setProductItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [user, setUser] = useState(null);
     const [addresses, setAddresses] = useState([]);
@@ -26,10 +25,13 @@ const CheckoutPage = () => {
         State: "",
     });
 
+    // -------------------
     // Fetch user profile
+    // -------------------
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) return;
+
         axios
             .get("http://localhost:5000/web/api/getProfile", {
                 headers: { Authorization: `Bearer ${token}` },
@@ -40,18 +42,23 @@ const CheckoutPage = () => {
             .catch((err) => console.error(err));
     }, []);
 
+    // -------------------
     // Fetch saved addresses
+    // -------------------
     useEffect(() => {
         if (!user?._id) return;
+
         axios
             .get(`http://localhost:5000/api/address/${user._id}`)
             .then((res) => setAddresses(res.data.addresses || []))
             .catch((err) => console.error(err));
     }, [user]);
 
+    // -------------------
+    // Load product items from cart
+    // -------------------
     useEffect(() => {
         if (location.state?.cart?.products) {
-            // convert products into displayable items
             const items = location.state.cart.products.map((item) => ({
                 id: item.productId?._id,
                 name: item.productId?.name,
@@ -61,29 +68,32 @@ const CheckoutPage = () => {
             }));
             setProductItems(items);
 
-            // calculate total price
-            const totalPrice = items.reduce(
-                (acc, item) => acc + item.price * item.qty,
-                0
-            );
+            const totalPrice = items.reduce((acc, item) => acc + item.price * item.qty, 0);
             setTotal(totalPrice);
         } else {
             setProductItems([]);
             setTotal(0);
         }
     }, [location.state]);
+
+    // -------------------
     // Load selected address from localStorage
+    // -------------------
     useEffect(() => {
         const savedAddress = localStorage.getItem("selectedAddress");
         if (savedAddress) setSelectedAddress(JSON.parse(savedAddress));
     }, []);
 
+    // -------------------
     // Handle address input
+    // -------------------
     const handleChange = (e) => {
         setAddressData({ ...addressData, [e.target.name]: e.target.value });
     };
 
+    // -------------------
     // Add new address
+    // -------------------
     const handleAddAddress = async (e) => {
         e.preventDefault();
         if (!user?._id) return;
@@ -93,6 +103,7 @@ const CheckoutPage = () => {
                 userId: user._id,
                 ...addressData,
             });
+
             setAddressData({
                 fullName: "",
                 phoneNumber: "",
@@ -113,42 +124,69 @@ const CheckoutPage = () => {
         }
     };
 
+    // -------------------
     // Place Order
+    // -------------------
     const handlePlaceOrder = async () => {
         if (!selectedAddress) {
             alert("Select a delivery address!");
             return;
         }
+
         try {
+            // const order = {
+            //     userId: user._id,
+            //     items: productItems,
+            //     total,
+            //     deliveryAddress: selectedAddress,
+            //     date: new Date(),
+            // };
             const order = {
                 userId: user._id,
-                items: productItems,
+                items: productItems.map((item) => ({
+                    productId: item._id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    image: item.image, // ✅ include image
+                })),
                 total,
                 deliveryAddress: selectedAddress,
                 date: new Date(),
             };
-            await axios.post("http://localhost:5000/api/orders", order);
-            localStorage.removeItem("singleCheckout");
-            navigate("/order-success");
+
+
+            // Use your backend Order_product API
+            await axios.post("http://localhost:5000/api/orders/place-order", order);
+
+
+            // Clear cart after placing order
+            localStorage.removeItem("cart");
+            localStorage.removeItem("selectedAddress");
+
+            navigate("/order-success"); // redirect to success page
         } catch (err) {
             console.error(err);
             alert("Failed to place order");
         }
     };
-    // Select address and save to localStorage
+
+    // -------------------
+    // Select address
+    // -------------------
     const handleSelectAddress = (addr) => {
         setSelectedAddress(addr);
         setShowAddressForm(false);
         localStorage.setItem("selectedAddress", JSON.stringify(addr));
     };
 
-
     return (
         <>
             <Navbar />
             <div className="container my-5">
                 <div className="row d-flex justify-content-center">
-                    {/* Left Side: Large Product Details */}
+
+                    {/* Left Side: Products */}
                     <div className="col-md-5">
                         <h4>Product Details</h4>
                         {productItems.length > 0 ? productItems.map((item, idx) => (
@@ -159,7 +197,6 @@ const CheckoutPage = () => {
                                     className="me-3"
                                     style={{ width: "150px", height: "150px", objectFit: "cover" }}
                                 />
-
                                 <div>
                                     <h5>{item.name}</h5>
                                     <p>Quantity: {item.qty}</p>
@@ -169,15 +206,15 @@ const CheckoutPage = () => {
                         )) : <p>No product selected</p>}
                     </div>
 
-                    {/* Right Side: Order Summary + Address */}
+                    {/* Right Side: Order Summary & Address */}
                     <div className="col-md-4">
                         <h4>Order Summary</h4>
 
                         {/* Price Summary */}
                         <div className="border p-3 mb-3">
-                            {productItems.length > 0 && productItems.map((item, idx) => (
+                            {productItems.map((item, idx) => (
                                 <div key={idx} className="d-flex justify-content-between">
-                                    <span>Toal Product Price is</span>
+                                    <span>{item.name}</span>
                                     <span>₹{item.price * item.qty}</span>
                                 </div>
                             ))}
@@ -188,9 +225,17 @@ const CheckoutPage = () => {
                             </div>
                         </div>
 
+                        {/* Select Address Button */}
                         {!selectedAddress && !addingNewAddress && (
-                            <button className="btn primary-btn w-100 my-3" style={{background: "#4052b7", color: "#fff" }} onClick={() => setShowAddressForm(true)}>Select Delivery Address</button>
+                            <button
+                                className="btn w-100 my-3"
+                                style={{ background: "#4052b7", color: "#fff" }}
+                                onClick={() => setShowAddressForm(true)}
+                            >
+                                Select Delivery Address
+                            </button>
                         )}
+
                         {/* Selected Address */}
                         {selectedAddress && (
                             <div className="card p-3 mb-2 border-success">
@@ -203,20 +248,12 @@ const CheckoutPage = () => {
                             </div>
                         )}
 
-                        {/* Saved Addresses + Add New Address */}
+                        {/* Saved Addresses */}
                         {showAddressForm && !addingNewAddress && (
                             <div className="border p-3 mb-3">
                                 <h5>Saved Addresses</h5>
                                 {addresses.length > 0 ? addresses.map((addr, idx) => (
-                                    <div
-                                        key={idx}
-                                        className="card p-2 mb-2"
-                                        style={{ cursor: "pointer" }}
-                                        onClick={() => {
-                                            setSelectedAddress(addr);
-                                            setShowAddressForm(false);
-                                        }}
-                                    >
+                                    <div key={idx} className="card p-2 mb-2" style={{ cursor: "pointer" }} onClick={() => handleSelectAddress(addr)}>
                                         <h5>{addr.fullName}</h5>
                                         <p>{addr.address}, {addr.City}, {addr.State} - {addr.Pincode}</p>
                                         {addr.phoneNumber}
@@ -224,7 +261,7 @@ const CheckoutPage = () => {
                                 )) : <p>No saved addresses</p>}
 
                                 <button
-                                    className="btn btn-outline-primary w-100 my-2"
+                                    className="btn w-100 mt-2"
                                     style={{ background: "#4052b7", color: "#fff" }}
                                     onClick={() => setAddingNewAddress(true)}
                                 >
@@ -244,19 +281,20 @@ const CheckoutPage = () => {
                                     <input type="text" name="Pincode" placeholder="Pincode" value={addressData.Pincode} onChange={handleChange} className="form-control my-1" />
                                     <input type="text" name="City" placeholder="City" value={addressData.City} onChange={handleChange} className="form-control my-1" />
                                     <input type="text" name="State" placeholder="State" value={addressData.State} onChange={handleChange} className="form-control my-1" />
-                                    <button type="submit" className="btn btn-success w-100 mt-2" style={{ background: "#4052b7", color: "#fff" }}>Save Address</button>
+                                    <button type="submit" className="btn w-100 mt-2" style={{ background: "#4052b7", color: "#fff" }}>Save Address</button>
                                     <button type="button" className="btn btn-danger w-100 mt-2" onClick={() => setAddingNewAddress(false)}>Cancel</button>
                                 </form>
                             </div>
                         )}
 
-                        {/* Place Order */}
+                        {/* Place Order Button */}
                         {selectedAddress && (
-                            <button className="btn btn-success w-100 mt-2"style={{background:"#4052b7", color:"#fff"}} onClick={handlePlaceOrder}>
+                            <button className="btn w-100 mt-2" style={{ background: "#4052b7", color: "#fff" }} onClick={handlePlaceOrder}>
                                 Place Order
                             </button>
                         )}
                     </div>
+
                 </div>
             </div>
         </>

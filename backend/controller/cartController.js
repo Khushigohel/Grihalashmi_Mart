@@ -87,6 +87,20 @@ const removeFromCart = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+// DELETE /api/cart/clear
+router.delete("/clear", authMiddleware, async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ userId: req.user.id });
+    if (cart) {
+      cart.products = [];
+      await cart.save();
+    }
+    res.json({ products: [] });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to clear cart" });
+  }
+});
+
 
 module.exports = {
   getCart,

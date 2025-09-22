@@ -28,6 +28,9 @@ app.use("/api/cart",cartRoutes);
 const checkoutRoutes=require("./router/web/checkoutRoutes")
 app.use("/api/checkout",checkoutRoutes);
 
+const orderProduct=require("./router/web/OrderProductRoutes");
+app.use("/api/orders",orderProduct);
+
 
 //Admin Routes call here
 const adminRoutes = require("./router/admin/adminRoutes");
@@ -36,8 +39,8 @@ app.use("/api/admin", adminRoutes);
 const productRoutes = require("./router/admin/productRoutes");
 app.use("/api/products", productRoutes);
 
-const orderRoutes = require("./router/admin/orderRoutes");
-app.use("/api/orders", orderRoutes);
+// const orderRoutes = require("./router/admin/orderRoutes");
+// app.use("/api/orders", orderRoutes);
 
 const adminStats = require("./router/admin/adminStats");
 app.use("/api/admin/stats", adminStats);

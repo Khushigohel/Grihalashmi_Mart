@@ -80,6 +80,11 @@ const Navbar = () => {
                 Categories
               </Link>
             </li>
+             <li className="nav-item">
+              <Link className="nav-link" to="/my-order">
+                MyOrder
+              </Link>
+            </li>
             {!isLoggedIn ? (
               <li className="nav-item">
                 <Link className="nav-link" to="/login" onClick={handleLogout}>
