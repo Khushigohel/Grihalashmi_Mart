@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useCart } from "../../context/CartContext";
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ const CheckoutPage = () => {
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [showAddressForm, setShowAddressForm] = useState(false);
     const [addingNewAddress, setAddingNewAddress] = useState(false);
+    const { clearCart } = useCart();
 
     const [addressData, setAddressData] = useState({
         fullName: "",
@@ -24,10 +26,7 @@ const CheckoutPage = () => {
         City: "",
         State: "",
     });
-
-    // -------------------
     // Fetch user profile
-    // -------------------
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -132,23 +131,16 @@ const CheckoutPage = () => {
             alert("Select a delivery address!");
             return;
         }
-
+          const token = localStorage.getItem("token");
         try {
-            // const order = {
-            //     userId: user._id,
-            //     items: productItems,
-            //     total,
-            //     deliveryAddress: selectedAddress,
-            //     date: new Date(),
-            // };
             const order = {
                 userId: user._id,
                 items: productItems.map((item) => ({
                     productId: item._id,
                     name: item.name,
                     price: item.price,
-                    quantity: item.quantity,
-                    image: item.image, // ✅ include image
+                    qty: item.qty,
+                    image: item.image,
                 })),
                 total,
                 deliveryAddress: selectedAddress,
@@ -159,6 +151,10 @@ const CheckoutPage = () => {
             // Use your backend Order_product API
             await axios.post("http://localhost:5000/api/orders/place-order", order);
 
+            await axios.delete(`http://localhost:5000/api/cart/${user._id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            clearCart();
 
             // Clear cart after placing order
             localStorage.removeItem("cart");

@@ -73,18 +73,11 @@ export const CartProvider = ({ children }) => {
   const cartCount =
     cart?.products?.reduce((acc, item) => acc + item.quantity, 0) || 0;
 
-  // ✅ Clear Cart (frontend + backend)
-  const clearCart = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete("http://localhost:5000/api/cart/clear", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setCart({ products: [] }); // empty in frontend
-    } catch (err) {
-      console.error("Clear cart error:", err.response?.data || err.message);
-    }
+  // ✅ Clear cart function
+  const clearCart = () => {
+    setCart({ products: [] });
   };
+
 
   return (
     <CartContext.Provider
@@ -96,7 +89,7 @@ export const CartProvider = ({ children }) => {
         updateQuantity,
         removeFromCart,
         cartCount,
-        clearCart, 
+        clearCart,
       }}
     >
       {children}
