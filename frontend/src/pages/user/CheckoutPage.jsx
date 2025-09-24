@@ -128,44 +128,56 @@ const CheckoutPage = () => {
     // -------------------
     const handlePlaceOrder = async () => {
         if (!selectedAddress) {
-            alert("Select a delivery address!");
-            return;
+          alert("Select a delivery address!");
+          return;
         }
-          const token = localStorage.getItem("token");
+      
+        const userId = localStorage.getItem("userId"); 
+        const token = localStorage.getItem("token");
+      
+        if (!userId || !token) {
+          alert("Please login first");
+          navigate("/login");
+          return;
+        }
+      
         try {
-            const order = {
-                userId: user._id,
-                items: productItems.map((item) => ({
-                    productId: item._id,
-                    name: item.name,
-                    price: item.price,
-                    qty: item.qty,
-                    image: item.image,
-                })),
-                total,
-                deliveryAddress: selectedAddress,
-                date: new Date(),
-            };
-
-
-            // Use your backend Order_product API
-            await axios.post("http://localhost:5000/api/orders/place-order", order);
-
-            await axios.delete(`http://localhost:5000/api/cart/${user._id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            clearCart();
-
-            // Clear cart after placing order
-            localStorage.removeItem("cart");
-            localStorage.removeItem("selectedAddress");
-
-            navigate("/order-success"); // redirect to success page
+          const order = {
+            userId,
+            items: productItems.map((item) => ({
+              productId: item.id, 
+              name: item.name,
+              price: item.price,
+              qty: item.qty,
+              image: item.image,
+            })),
+            total,
+            deliveryAddress: selectedAddress,
+            date: new Date(),
+          };
+      
+          // Place order
+          await axios.post("http://localhost:5000/api/orders/place-order", order, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+      
+          // ✅ Clear cart from backend
+          await axios.delete(`http://localhost:5000/api/cart/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+      
+          // ✅ Clear cart locally
+          clearCart();
+          localStorage.removeItem("cart");
+          localStorage.removeItem("selectedAddress");
+      
+          navigate("/order-success");
         } catch (err) {
-            console.error(err);
-            alert("Failed to place order");
+          console.error("Place order error:", err);
+          alert("Failed to place order");
         }
-    };
+      };
+      
 
     // -------------------
     // Select address
