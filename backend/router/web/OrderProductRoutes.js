@@ -44,7 +44,7 @@ router.post("/place-order", async (req, res) => {
 router.get("/:userId", async (req, res) => {
   try {
     const orders = await Order.find({ userId: req.params.userId }).sort({ date: -1 });
-    res.status(200).json(orders);
+    res.status(200).json({ orders });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

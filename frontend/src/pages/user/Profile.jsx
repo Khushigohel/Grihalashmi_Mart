@@ -9,6 +9,8 @@ const Profile = () => {
   const [error, setError] = useState("");
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addresses, setAddresses] = useState([]);
+  const [orders, setOrders] = useState([]);
+
   const [hover, setHover] = useState(false);
 
   const [addressData, setAddressData] = useState({
@@ -17,8 +19,20 @@ const Profile = () => {
     address: "",
     Pincode: "",
     City: "",
-    State: ""
+    State: "",
   });
+
+  const fetchOrders = async () => {
+    if (!user?._id) return;
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/orders/${user._id}`
+      );
+      setOrders(res.data.orders || []);
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+    }
+  };
 
   const handleChange = (e) => {
     setAddressData({ ...addressData, [e.target.name]: e.target.value });
@@ -34,7 +48,7 @@ const Profile = () => {
     try {
       await axios.post("http://localhost:5000/api/address", {
         userId: user._id,
-        ...addressData
+        ...addressData,
       });
       alert("Address saved successfully!");
       setShowAddressForm(false);
@@ -44,7 +58,7 @@ const Profile = () => {
         address: "",
         Pincode: "",
         City: "",
-        State: ""
+        State: "",
       });
       fetchAddresses(); // refresh after adding
     } catch (err) {
@@ -56,7 +70,9 @@ const Profile = () => {
   const fetchAddresses = async () => {
     if (!user?._id) return;
     try {
-      const res = await axios.get(`http://localhost:5000/api/address/${user._id}`);
+      const res = await axios.get(
+        `http://localhost:5000/api/address/${user._id}`
+      );
       setAddresses(res.data.addresses || []);
     } catch (err) {
       console.error("Error fetching addresses:", err);
@@ -100,6 +116,12 @@ const Profile = () => {
     };
     fetchProfile();
   }, []);
+  useEffect(() => {
+    if (user?._id) {
+      fetchAddresses();
+      fetchOrders();
+    }
+  }, [user]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -124,24 +146,33 @@ const Profile = () => {
             </div>
             <ul className="list-group">
               <li
-                className={`list-group-item ${activeTab === "profile" ? "active" : ""}`}
+                className={`list-group-item ${
+                  activeTab === "profile" ? "active" : ""
+                }`}
                 onClick={() => setActiveTab("profile")}
               >
                 Profile Information
               </li>
               <li
-                className={`list-group-item ${activeTab === "orders" ? "active" : ""}`}
+                className={`list-group-item ${
+                  activeTab === "orders" ? "active" : ""
+                }`}
                 onClick={() => setActiveTab("orders")}
               >
                 My Orders
               </li>
               <li
-                className={`list-group-item ${activeTab === "address" ? "active" : ""}`}
+                className={`list-group-item ${
+                  activeTab === "address" ? "active" : ""
+                }`}
                 onClick={() => setActiveTab("address")}
               >
                 Saved Addresses
               </li>
-              <li className="list-group-item text-danger" onClick={handleLogout}>
+              <li
+                className="list-group-item text-danger"
+                onClick={handleLogout}
+              >
                 Logout
               </li>
             </ul>
@@ -198,7 +229,45 @@ const Profile = () => {
             {activeTab === "orders" && (
               <div>
                 <h4 className="mb-4">My Orders</h4>
-                <p>No recent orders found.</p>
+
+                {orders.length > 0 ? (
+                  <div className="row">
+                    {orders.map((order, index) => (
+                      <div className="col-md-6 mb-3" key={index}>
+                        <div className="card p-3 shadow-sm">
+                          <h6>
+                            <strong>Order ID:</strong> {order._id}
+                          </h6>
+                          <p>
+                            <strong>Total:</strong> ₹{order.total}
+                          </p>
+                          <p>
+                            <strong>Status:</strong> {order.status || "Pending"}
+                          </p>
+
+                          <h6 className="mt-2">Items:</h6>
+                          <ul>
+                            {order.items.map((item, i) => (
+                              <li key={i}>
+                                {item.productName} x {item.quantity}
+                              </li>
+                            ))}
+                          </ul>
+
+                          <p>
+                            <strong>Delivery Address:</strong>{" "}
+                            {order.deliveryAddress?.address},{" "}
+                            {order.deliveryAddress?.City},{" "}
+                            {order.deliveryAddress?.State} -{" "}
+                            {order.deliveryAddress?.Pincode}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted">No recent orders found.</p>
+                )}
               </div>
             )}
 
@@ -223,14 +292,23 @@ const Profile = () => {
                     {addresses.map((addr, index) => (
                       <div className="col-md-6 mb-3" key={index}>
                         <div className="card p-3 shadow-sm">
-                          <h6><strong>Name:</strong>{addr.fullName}</h6>
-                          <p><strong>Phone:</strong> {addr.phoneNumber}</p>
-                          <p><strong>Street:</strong> {addr.address}</p>
+                          <h6>
+                            <strong>Name:</strong>
+                            {addr.fullName}
+                          </h6>
+                          <p>
+                            <strong>Phone:</strong> {addr.phoneNumber}
+                          </p>
+                          <p>
+                            <strong>Street:</strong> {addr.address}
+                          </p>
                           <p>
                             <strong>City:</strong> {addr.City},
                             <strong> State:</strong> {addr.State}
                           </p>
-                          <p><strong>Pincode:</strong> {addr.Pincode}</p>
+                          <p>
+                            <strong>Pincode:</strong> {addr.Pincode}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -307,18 +385,21 @@ const Profile = () => {
                         </div>
                       </div>
                       <div className="d-flex justify-content-between ">
-                        <button type="submit" style={{
-                          background: hover ? "#6f7bc0ff" : "#2e3ca6",
-                          color: "#fff",
-                          transition: "background 0.3s"
-                        }}
+                        <button
+                          type="submit"
+                          style={{
+                            background: hover ? "#6f7bc0ff" : "#2e3ca6",
+                            color: "#fff",
+                            transition: "background 0.3s",
+                          }}
                           onMouseEnter={() => setHover(true)}
-                          onMouseLeave={() => setHover(false)}>
-
+                          onMouseLeave={() => setHover(false)}
+                        >
                           Save Address
                         </button>
                         <button
-                          type="button" style={{ background: "#c52e10ff", color: "#fff" }}
+                          type="button"
+                          style={{ background: "#c52e10ff", color: "#fff" }}
                           onClick={() => setShowAddressForm(false)}
                         >
                           Cancel
@@ -337,17 +418,3 @@ const Profile = () => {
 };
 
 export default Profile;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
