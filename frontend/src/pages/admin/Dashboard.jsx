@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
+import { useNavigate } from "react-router";
 
 const Dashboard = () => {
  /* const [stats, setStats] = useState({
@@ -33,6 +34,7 @@ const Dashboard = () => {
 
   //count total product
    const [ProductCount, setProductCount] = useState(0);
+   const navigate=useNavigate();
    useEffect(() => {
     const fetchProductCount = async () => {
       try {
@@ -82,7 +84,7 @@ const Dashboard = () => {
       <div className="dashboard-buttons">
         <button className="card-action-btn">View All Users</button>
         <button className="card-action-btn">View All Orders</button>
-        <button className="card-action-btn">View All Products</button>
+        <button className="card-action-btn"onClick={()=>navigate("/admin/manage-products")}>View All Products</button>
       </div>
     </div>
   );

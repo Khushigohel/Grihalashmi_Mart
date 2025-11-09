@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "./Footer";
 import axios from "axios";
@@ -12,7 +12,13 @@ import "react-toastify/dist/ReactToastify.css";
 function ProductDetails() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-   const { addToCart } = useCart();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+
+  const handleBuyNow = (product) => {
+    navigate("/checkout", { state: { product } });
+  };
+
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -83,7 +89,7 @@ function ProductDetails() {
             <h4>Available Offers</h4>
             <ul>
               <li>💰 Cashback up to ₹50 on UPI payments</li>
-              <li>🚚 Free Delivery on orders above ₹499</li>
+              <li>🚚 Free Delivery on orders ₹199</li>
               <li>🔒 Secure transaction</li>
             </ul>
           </div>
@@ -91,12 +97,12 @@ function ProductDetails() {
           <div className="action-buttons">
             {/* <button className="add-to-cart"  onClick={() => addToCart(product._id, 1)}>Add to Cart</button> */}
             <button className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
-            <button className="buy-now">Buy Now</button>
+            <button className="buy-now" onClick={() => handleBuyNow(product)}>Buy Now</button>
           </div>
 
         </div>
       </div>
-      <ToastContainer/>
+      <ToastContainer />
       <Footer />
     </>
   );
