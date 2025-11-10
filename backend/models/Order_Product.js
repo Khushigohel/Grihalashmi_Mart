@@ -25,5 +25,4 @@ const orderSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   status: { type: String, default: "pending" } // optional
 });
-
-module.exports = mongoose.model("Order_product", orderSchema);
+module.exports = mongoose.model("Order_Product", orderSchema);

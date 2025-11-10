@@ -66,7 +66,6 @@ export default function ManageProducts() {
                 <th>Category</th>
                 <th>Price</th>
                 <th>Description</th>
-                <th>Stock</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -86,11 +85,6 @@ export default function ManageProducts() {
                   <td>{p.category}</td>
                   <td>₹{p.price}</td>
                   <td>{p.description}</td>
-                  <td>
-                    <span className={p.stock > 0 ? "in-stock" : "out-of-stock"}>
-                      {p.stock > 0 ? "In Stock" : "Out of Stock"}
-                    </span>
-                  </td>
                   <td>
                     <button
                       className="view-btn"

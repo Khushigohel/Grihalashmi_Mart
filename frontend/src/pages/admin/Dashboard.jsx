@@ -3,52 +3,38 @@ import "./style.css";
 import { useNavigate } from "react-router";
 
 const Dashboard = () => {
- /* const [stats, setStats] = useState({
-    totalProducts: 0,
-    totalUsers: 0,
-    totalOrders: 0,
-  });
+  const [productCount, setProductCount] = useState(0);
+  const [userCount, setUserCount] = useState(0);
+  const [orderCount, setOrderCount] = useState(0);
+  const [totalPayment, setTotalPayment] = useState(0);
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const resProducts = await fetch("http://localhost:5000/api/products/count");
-        const resUsers = await fetch("http://localhost:5000/api/users/count");
-        const resOrders = await fetch("http://localhost:5000/api/orders/count");
+        // Fetch products
+        const productRes = await fetch("http://localhost:5000/api/products/countProduct");
+        const productData = await productRes.json();
+        if (productData.success) setProductCount(productData.count);
 
-        const dataProducts = await resProducts.json();
-        const dataUsers = await resUsers.json();
-        const dataOrders = await resOrders.json();
+        // Fetch users
+       const userRes = await fetch("http://localhost:5000/web/api/countUser");
+        const userData = await userRes.json();
+        if (userData.success) setUserCount(userData.count);
 
-        setStats({
-          totalProducts: dataProducts.count || 0,
-          totalUsers: dataUsers.count || 0,
-          totalOrders: dataOrders.count || 0,
-        });
-      } catch (err) {
-        console.error("Failed to fetch stats:", err);
-      }
-    };
-
-    fetchStats();
-  }, []);*/
-
-  //count total product
-   const [ProductCount, setProductCount] = useState(0);
-   const navigate=useNavigate();
-   useEffect(() => {
-    const fetchProductCount = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/products/countProduct");
-        const data = await res.json();
-        if (data.success) {
-          setProductCount(data.count);
+        // Fetch orders and payments
+       const orderRes = await fetch("http://localhost:5000/api/orders/countOrder");
+        const orderData = await orderRes.json();
+        if (orderData.success) {
+          setOrderCount(orderData.totalOrders);
+          setTotalPayment(orderData.totalPayments);
         }
       } catch (err) {
-        console.error("Failed to fetch Product count:", err);
+        console.error("Failed to fetch dashboard data:", err);
       }
     };
 
-    fetchProductCount();
+    fetchDashboardData();
   }, []);
 
   return (
@@ -64,27 +50,29 @@ const Dashboard = () => {
         <div className="dashboard-card">
           <div className="card-icon">🛒</div>
           <h3>Total Products</h3>
-          <p className="count">{ProductCount}</p>
+          <p className="count">{productCount}</p>
         </div>
 
         <div className="dashboard-card">
           <div className="card-icon">👥</div>
           <h3>Total Users</h3>
-          {/*<p className="count">{stats.totalUsers}</p>*/}
+          <p className="count">{userCount}</p>
         </div>
 
         <div className="dashboard-card">
           <div className="card-icon">📦</div>
           <h3>Total Orders</h3>
-        {/**   <p className="count">{stats.totalOrders}</p>*/}
+          <p className="count">{orderCount}</p>
         </div>
       </div>
 
       {/* Buttons Row */}
       <div className="dashboard-buttons">
         <button className="card-action-btn">View All Users</button>
-        <button className="card-action-btn">View All Orders</button>
-        <button className="card-action-btn"onClick={()=>navigate("/admin/manage-products")}>View All Products</button>
+        <button className="card-action-btn" onClick={()=>navigate("/admin/Orders")}>View All Orders</button>
+        <button className="card-action-btn" onClick={() => navigate("/admin/manage-products")}>
+          View All Products
+        </button>
       </div>
     </div>
   );

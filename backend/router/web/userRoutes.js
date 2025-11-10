@@ -4,6 +4,15 @@ const bcrypt = require("bcrypt");
 const User = require("../../models/User");
 const jwt = require("jsonwebtoken");
 
+router.get("/countUser", async (req, res) => {
+  try {
+    const count = await User.countDocuments();
+    res.json({ success: true, count });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to count users" });
+  }
+});
+
 router.post("/signUp", async (req, res) => {
   const { fname, email, phoneNumber, password } = req.body;
   try {
@@ -29,6 +38,7 @@ router.post("/signUp", async (req, res) => {
     res.status(500).json({ message: "Server error during Signup" });
   }
 });
+
 router.post("/signIn", async (req, res) => {
   const { email, password } = req.body;
 
