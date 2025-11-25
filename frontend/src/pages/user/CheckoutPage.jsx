@@ -60,7 +60,7 @@ const CheckoutPage = () => {
   // -------------------
   // Load product items from cart
   // -------------------
- useEffect(() => {
+  useEffect(() => {
     if (cartData?.products) {
       // When coming from Cart
       const items = cartData.products.map((item) => ({
@@ -143,7 +143,7 @@ const CheckoutPage = () => {
   // -------------------
   // Place Order
   // -------------------
-// ✅ Place Order
+  // ✅ Place Order
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress) return alert("Select a delivery address!");
@@ -248,7 +248,7 @@ const CheckoutPage = () => {
                 <strong>₹{total}</strong>
               </div>
               {/* ✅ Payment Method Section */}
-           {/* Payment Method */}
+              {/* Payment Method */}
               <div className="border p-3 mb-3 mt-3">
                 <h5>Select Payment Method</h5>
                 <div className="form-check">
@@ -280,17 +280,20 @@ const CheckoutPage = () => {
                   </label>
                 </div>
               </div>
-
               {/* ✅ QR Payment Section */}
               {paymentMethod === "Online Payment" && (
                 <div className="text-center border p-3 mb-3">
                   <h5>Scan to Pay ₹{total}</h5>
+
+                  {/* Your QR Code Image */}
                   <img
-                    src="/paymentQR.png"
+                    src="/paymentQR.png"   // <-- put your image inside public folder
                     alt="QR Code"
                     style={{ width: "200px", height: "200px" }}
                   />
+
                   <p className="mt-2">Use any UPI app (PhonePe, GPay, Paytm, etc.)</p>
+
                   <button
                     className="btn btn-success mt-2"
                     onClick={() => {
@@ -302,6 +305,7 @@ const CheckoutPage = () => {
                   </button>
                 </div>
               )}
+
             </div>
 
             {/* Select Address Button */}

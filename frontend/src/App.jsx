@@ -22,6 +22,7 @@ import ProductDetails from "./pages/user/ProductDetails";
 import CheckoutPage from "./pages/user/CheckoutPage";
 import OrderSuccess from "./pages/user/OrderSuccess ";
 import MyOrders from "./pages/user/MyOrder";
+import TrackOrder from "./pages/user/TrackOrder";
 
 
 function App() {
@@ -40,6 +41,8 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage/>}/>
         <Route path="/order-success" element={<OrderSuccess/>}/>
         <Route path="/my-order" element={<MyOrders/>}/>
+        <Route path="/track-order/:orderId" element={<TrackOrder />} />
+
 
         <Route path="/admin/loginadmin" element={<LoginAdmin />} />
         <Route

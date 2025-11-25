@@ -87,28 +87,58 @@ router.get("/user/:userId", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 // -----------------------------
-// Update Order Status
+// 📦 Update Order Status + Add Tracking History
 // -----------------------------
 router.patch("/:orderId/status", async (req, res) => {
   try {
     const { status } = req.body;
-    if (!status) return res.status(400).json({ message: "Status is required" });
 
-    const order = await Order.findByIdAndUpdate(
-      req.params.orderId,
-      { status },
-      { new: true }
-    );
+    if (!status) {
+      return res.status(400).json({ message: "Status is required" });
+    }
 
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    const order = await Order.findById(req.params.orderId);
 
-    res.status(200).json({ message: "Status updated", order });
-  } catch (err) {
-    console.error(err);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // update status
+    order.status = status;
+
+    // push tracking update
+    order.trackingHistory.push({
+      status,
+      date: new Date(),
+    });
+
+    await order.save();
+
+    res.status(200).json({
+      message: "Order status updated",
+      order,
+    });
+  } catch (error) {
+    console.error("Status update error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
+// GET: Track Order
+router.get("/track/:orderId", async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+
 
 module.exports = router;

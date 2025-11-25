@@ -20,6 +20,7 @@
     "mongoose": "^8.16.4",
     "mongose": "^0.0.2-security",
     "multer": "^2.0.2",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "razorpay": "^2.9.6"
   }
 }

@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import "../../css/MyOrders.css";
 
-const MyOrders = () => {
+const MyOrder = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const userId = localStorage.getItem("userId"); // stored after login
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     if (!userId) {
@@ -20,7 +21,7 @@ const MyOrders = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/orders/${userId}`
+          `http://localhost:5000/api/orders/user/${userId}`
         );
         setOrders(res.data);
       } catch (err) {
@@ -34,136 +35,102 @@ const MyOrders = () => {
     fetchOrders();
   }, [userId]);
 
+  const statusColor = (status) => {
+    const key = (status || "").toLowerCase();
+    if (key.includes("pending") || key.includes("placed")) return "#f1c40f";
+    if (key.includes("packed") || key.includes("processing")) return "#3498db";
+    if (key.includes("shipped")) return "#1abc9c";
+    if (key.includes("delivered")) return "#2ecc71";
+    if (key.includes("cancel")) return "#e74c3c";
+    return "#95a5a6";
+  };
+
   return (
     <>
       <Navbar />
-      <div className="container my-5">
-        <h2 className="text-center mb-4">📦 My Orders</h2>
+      <div className="orders-page">
+        <div className="orders-wrapper">
+          <h1>My Orders</h1>
 
-        {/* Loading */}
-        {loading && <p className="text-center">Loading your orders...</p>}
+          {loading && <p className="muted">Loading your orders...</p>}
+          {error && !loading && <p className="error">{error}</p>}
+          {!loading && !error && orders.length === 0 && (
+            <p className="muted">You don't have any orders yet.</p>
+          )}
 
-        {/* Error */}
-        {error && !loading && (
-          <p className="text-center text-danger">{error}</p>
-        )}
-
-        {/* No Orders */}
-        {!loading && !error && orders.length === 0 && (
-          <p className="text-center">You don’t have any orders yet.</p>
-        )}
-
-        {/* Orders List */}
-        <div className="d-flex flex-column align-items-center">
-          {orders.map((order) => (
-            <div
-              key={order._id}
-              className="card shadow-sm mb-4 w-75 text-center"
-              style={{ borderRadius: "12px" }}
-            >
-              {/* Order Header */}
-              <div
-                className="card-header text-white"
-                style={{
-                  backgroundColor: "#28a745",
-                  fontWeight: "bold",
-                  borderTopLeftRadius: "12px",
-                  borderTopRightRadius: "12px",
-                }}
-              >
-                Order ID: {order._id}
-              </div>
-
-              <div className="card-body">
-                {/* Date & Status */}
-                <p className="text-muted mb-1">
-                  Date:{" "}
-                  {order.date
-                    ? new Date(order.date).toLocaleString()
-                    : "N/A"}
-                </p>
-                <p>
-                  Status:{" "}
-                  <span
-                    className={`badge ${
-                      order.status === "pending"
-                        ? "bg-warning"
-                        : order.status === "shipped"
-                        ? "bg-info"
-                        : order.status === "delivered"
-                        ? "bg-success"
-                        : "bg-secondary"
-                    }`}
-                  >
-                    {order.status || "N/A"}
-                  </span>
-                </p>
-
-                {/* Product Details */}
-                <h5 className="mt-3">🛒 Products</h5>
-                <div className="d-flex flex-column align-items-center">
-                  {order.items?.map((item, idx) => (
-                    <Link
-                      to={`/products/${item._id}`} // <-- navigate to product details
-                      key={idx}
-                      className="text-decoration-none text-dark w-75"
+          <div className="orders-grid">
+            {!loading &&
+              orders.map((order) => (
+                <div className="order-card" key={order._id}>
+                  {/* Order Header */}
+                  <div className="order-header">
+                    <div>
+                      <strong>Order:</strong> {order._id}
+                    </div>
+                    <div>
+                      <strong>Date:</strong>{" "}
+                      {order.date ? new Date(order.date).toLocaleString() : "-"}
+                    </div>
+                    <div
+                      className="status-pill"
+                      style={{ backgroundColor: statusColor(order.status) }}
                     >
-                      <div
-                        className="d-flex align-items-center justify-content-between border p-2 mb-2"
-                        style={{ borderRadius: "8px" }}
-                      >
+                      {order.status || "N/A"}
+                    </div>
+                  </div>
+
+                  {/* Items */}
+                  <div className="order-items">
+                    {order.items?.map((item, idx) => (
+                      <div className="item" key={idx}>
                         <img
-                          src={item.image || "https://via.placeholder.com/60"}
+                          src={
+                            item.image ||
+                            "/mnt/data/11e833de-ff52-4d21-8666-4cca1d311fc5.png"
+                          }
                           alt={item.name}
-                          style={{
-                            width: "60px",
-                            height: "60px",
-                            borderRadius: "8px",
-                            objectFit: "cover",
-                          }}
+                          className="item-image"
                         />
-                        <div className="flex-grow-1 mx-3 text-start">
-                          <p className="mb-1 fw-bold">{item.name}</p>
-                          <p className="mb-0">
-                            ₹{item.price} × {item.qty} ={" "}
-                            <span className="text-success fw-bold">
-                              ₹{(item.price * item.qty).toFixed(2)}
-                            </span>
-                          </p>
+                        <div className="item-info">
+                          <span className="item-name">{item.name}</span>
+                          <span className="item-qty">
+                            Qty: {item.qty} | ₹{(item.price * item.qty).toFixed(2)}
+                          </span>
                         </div>
                       </div>
-                    </Link>
-                  ))}
-                </div>
-
-                {/* Delivery Address */}
-                {order.deliveryAddress && (
-                  <div className="mt-3 text-start">
-                    <h5>🚚 Delivery Address</h5>
-                    <p className="mb-1">{order.deliveryAddress.fullName}</p>
-                    <p className="mb-1">
-                      {order.deliveryAddress.address},{" "}
-                      {order.deliveryAddress.City},{" "}
-                      {order.deliveryAddress.State} -{" "}
-                      {order.deliveryAddress.Pincode}
-                    </p>
-                    <p className="mb-0">
-                      📞 {order.deliveryAddress.phoneNumber}
-                    </p>
+                    ))}
                   </div>
-                )}
 
-                {/* Total */}
-                <h4 className="mt-4 text-success">
-                  Total: ₹{order.total?.toFixed(2)}
-                </h4>
-              </div>
-            </div>
-          ))}
+                  {/* Delivery Address & Total */}
+                  <div className="order-footer">
+                    <div className="delivery-address">
+                      {order.deliveryAddress ? (
+                        <>
+                          <strong>{order.deliveryAddress.fullName}</strong> <br />
+                          {order.deliveryAddress.address}, {order.deliveryAddress.City},{" "}
+                          {order.deliveryAddress.State} - {order.deliveryAddress.Pincode} <br />
+                          <strong>Phone:</strong> {order.deliveryAddress.phoneNumber}
+                        </>
+                      ) : (
+                        <span>No delivery address</span>
+                      )}
+                    </div>
+
+                    <div className="order-total">
+                      <strong>Total:</strong> ₹{order.total?.toFixed(2)}
+                    </div>
+                  </div>
+
+                  <Link to={`/track-order/${order._id}`}>
+                    <button className="track-button">Track Order</button>
+                  </Link>
+                </div>
+              ))}
+          </div>
         </div>
       </div>
     </>
   );
 };
 
-export default MyOrders;
+export default MyOrder;
