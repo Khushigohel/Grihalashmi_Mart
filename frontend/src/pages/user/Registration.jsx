@@ -22,20 +22,73 @@ const Registration = () => {
   const [generatedOtp, setGeneratedOtp] = useState("");
   const [userOtp, setUserOtp] = useState("");
   const navigate = useNavigate();
+
   const handleChange = (e) => {
     setformData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const validateInputs = () => {
+    const { fname, email, phoneNumber, password, confirmPassword } = formData;
+
+    if (!fname || !email || !phoneNumber || !password || !confirmPassword) {
+      handleError("All fields must be filled.");
+      return false;
+    }
+
+    // Name validation (at least 2 characters)
+    // Name validation (only letters and spaces)
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!nameRegex.test(fname)) {
+      handleError("Name can contain only letters and spaces.");
+      return false;
+    }
+
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      handleError("Enter a valid email address.");
+      return false;
+    }
+
+    // Phone number validation (10 digits)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phoneNumber)) {
+      handleError("Enter a valid 10-digit phone number.");
+      return false;
+    }
+
+    // Password match
+    if (password !== confirmPassword) {
+      handleError("Password and confirm password do not match.");
+      return false;
+    }
+
+    // Password strength (at least 6 characters)
+    if (password.length < 6) {
+      handleError("Password must be at least 6 characters long.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const checkEmailExists = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/web/api/checkEmail",
+        { email: formData.email }
+      );
+      return response.data.exists; // true if email exists
+    } catch (err) {
+      handleError("Error checking email.");
+      return true; // prevent sending OTP if error
+    }
   };
 
   const sendOtp = () => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(otp);
-
-    // const templateParams = {
-    //   to_name: formData.fname,
-    //   to_email: formData.email,
-    //   passcode: otp,
-    // };
-    //console.log("Sending OTP with these params:", templateParams);
 
     emailjs
       .send(
@@ -53,7 +106,7 @@ const Registration = () => {
         handleSucess("OTP sent to your email");
         console.log(" OTP email sent!", response.status, response.text);
       })
-      .catch(() => {
+      .catch((err) => {
         handleError("Failed to send OTP");
         console.error(" OTP email error:", err);
       });
@@ -61,16 +114,18 @@ const Registration = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    const { fname, email, phoneNumber, password, confirmPassword } = formData;
-    if (!fname || !email || !phoneNumber || !password || !confirmPassword) {
-      return handleError("All Input Must Fill..");
-    }
-    if (password !== confirmPassword) {
-      return handleError("Password is Not match");
+
+    if (!validateInputs()) return;
+
+    // Check if email already exists
+    const emailExists = await checkEmailExists();
+    if (emailExists) {
+      return handleError("This email is already registered.");
     }
 
     sendOtp();
   };
+
   const handleOtpVerify = async () => {
     if (userOtp === generatedOtp) {
       try {
@@ -100,7 +155,7 @@ const Registration = () => {
       <div className="login-wrapper d-flex justify-content-center align-items-center vh-100 bg-light">
         <div
           className="card p-4 shadow-sm"
-          style={{ maxWidth: "500px", width: "200%" }}
+          style={{ maxWidth: "500px", width: "100%" }}
         >
           <h4 className="text-center text-success fw-bold mb-3">
             Registration to Gruhalakshmi Mart
@@ -112,7 +167,7 @@ const Registration = () => {
                   Full Name
                 </label>
                 <input
-                  type="Name"
+                  type="text"
                   name="fname"
                   onChange={handleChange}
                   autoFocus
@@ -139,7 +194,7 @@ const Registration = () => {
                   Phone Number
                 </label>
                 <input
-                  type="Phone"
+                  type="text"
                   name="phoneNumber"
                   onChange={handleChange}
                   value={formData.phoneNumber}
@@ -176,7 +231,7 @@ const Registration = () => {
               </div>
               <div className="mb-3" style={{ position: "relative" }}>
                 <label htmlFor="confirm-pass" className="form-label">
-                  Confrim Password
+                  Confirm Password
                 </label>
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -201,12 +256,10 @@ const Registration = () => {
                 </span>
               </div>
 
-              {/* Button */}
               <button type="submit" className="btn btn-success w-100">
                 Send OTP
               </button>
 
-              {/* Link */}
               <p className="text-center mt-3">
                 Already Have An Account ?<a href="/login">Login</a>
               </p>
