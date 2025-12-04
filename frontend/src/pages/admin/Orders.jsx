@@ -5,7 +5,6 @@ import "../../css/Orders.css";
 const Orders = () => {
   const [orders, setOrders] = useState([]);
 
-  // Fetch all orders from backend
   const fetchOrders = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/orders/all");
@@ -19,13 +18,12 @@ const Orders = () => {
     fetchOrders();
   }, []);
 
-  // Function to update status
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       await axios.patch(`http://localhost:5000/api/orders/${orderId}/status`, {
         status: newStatus,
       });
-      // update frontend instantly
+
       setOrders((prev) =>
         prev.map((order) =>
           order._id === orderId ? { ...order, status: newStatus } : order
@@ -38,9 +36,21 @@ const Orders = () => {
 
   // Count by status
   const totalOrders = orders.length;
-  const delivered = orders.filter((o) => o.status === "delivered").length;
-  const processing = orders.filter((o) => o.status === "processing").length;
-  const cancelled = orders.filter((o) => o.status === "cancelled").length;
+  const delivered = orders.filter((o) => o.status === "Delivered").length;
+  const packed = orders.filter((o) => o.status === "Packed").length;
+  const shipped = orders.filter((o) => o.status === "Shipped").length;
+  const outForDelivery = orders.filter((o) => o.status === "Out for Delivery").length;
+  const cancelled = orders.filter((o) => o.status === "Cancelled").length;
+  const pending = orders.filter((o) => o.status === "Pending").length;
+
+  const orderStatusOptions = [
+    "Pending",
+    "Packed",
+    "Shipped",
+    "Out for Delivery",
+    "Delivered",
+    "Cancelled",
+  ];
 
   return (
     <div className="orders-container">
@@ -57,17 +67,28 @@ const Orders = () => {
           <h3>{delivered}</h3>
           <p>Delivered</p>
         </div>
-        <div className="card processing">
-          <h3>{processing}</h3>
-          <p>Processing</p>
+        <div className="card shipped">
+          <h3>{shipped}</h3>
+          <p>Shipped</p>
+        </div>
+        <div className="card packed">
+          <h3>{packed}</h3>
+          <p>Packed</p>
+        </div>
+        <div className="card out">
+          <h3>{outForDelivery}</h3>
+          <p>Out for Delivery</p>
         </div>
         <div className="card cancelled">
           <h3>{cancelled}</h3>
           <p>Cancelled</p>
         </div>
+        <div className="card pending">
+          <h3>{pending}</h3>
+          <p>Pending</p>
+        </div>
       </div>
 
-      {/* Orders Table */}
       <div className="orders-table-container">
         <table className="orders-table">
           <thead>
@@ -90,21 +111,19 @@ const Orders = () => {
                   <td>{order.deliveryAddress?.fullName || "Unknown"}</td>
                   <td>{order.items?.[0]?.name || "No Item"}</td>
                   <td>₹{order.total}</td>
+
                   <td>
-                    <span
-                      className={`status-badge ${order.status?.toLowerCase()}`}
-                    >
-                      {order.status
-                        ? order.status.charAt(0).toUpperCase() +
-                          order.status.slice(1)
-                        : "Pending"}
+                    <span className={`status-badge ${order.status?.toLowerCase()}`}>
+                      {order.status}
                     </span>
                   </td>
+
                   <td>
                     {order.date
                       ? new Date(order.date).toISOString().split("T")[0]
                       : "N/A"}
                   </td>
+
                   <td>
                     <select
                       className="status-dropdown"
@@ -113,10 +132,11 @@ const Orders = () => {
                         handleStatusChange(order._id, e.target.value)
                       }
                     >
-                      <option value="pending">Pending</option>
-                      <option value="processing">Processing</option>
-                      <option value="delivered">Delivered</option>
-                      <option value="cancelled">Cancelled</option>
+                      {orderStatusOptions.map((status) => (
+                        <option value={status} key={status}>
+                          {status}
+                        </option>
+                      ))}
                     </select>
                   </td>
                 </tr>
