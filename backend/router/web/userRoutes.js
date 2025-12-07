@@ -12,32 +12,42 @@ router.get("/countUser", async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to count users" });
   }
 });
+// router.post("/checkEmail", async (req, res) => {
+//   try {
+//     const { email } = req.body;
+//     const user = await User.findOne({ email });
+
+//     return res.json({ exists: !!user });
+//   } catch (err) {
+//     res.status(500).json({ message: "Something went wrong" });
+//   }
+// });
+
 
 router.post("/signUp", async (req, res) => {
-  const { fname, email, phoneNumber, password } = req.body;
   try {
-    const existinguser = await User.findOne({ email });
-    if (existinguser)
-      return res
-        .status(409)
-        .json({ success: false, message: "User Already Existing" });
+    const { fname, email, phoneNumber, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser)
+      return res.status(409).json({ success: false, message: "User already exists" });
 
     const hashPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({
+
+    const newUser = await User.create({
       fname,
       email,
       phoneNumber,
       password: hashPassword,
     });
-    await newUser.save();
-    res
-      .status(201)
-      .json({ success: true, message: "User Registration succeesfully..." });
-  } catch (error) {
-    console.log("Sign Up error", error);
-    res.status(500).json({ message: "Server error during Signup" });
+
+    res.status(201).json({ success: true, message: "Registration successful" });
+
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error during signup" });
   }
 });
+
 
 router.post("/signIn", async (req, res) => {
   const { email, password } = req.body;
@@ -45,41 +55,41 @@ router.post("/signIn", async (req, res) => {
   try {
     const userLogin = await User.findOne({ email });
     if (!userLogin) {
-      console.log("User is not found", email);
       return res.status(404).json({
         success: false,
-        message: "User is not Avaiable Please register.",
+        message: "User not found, please register.",
       });
     }
+
     const isPasswordEqual = await bcrypt.compare(password, userLogin.password);
     if (!isPasswordEqual) {
-      console.log("Pssword is Not Match");
       return res.status(401).json({
         success: false,
-        message: "Invalid is Password ",
+        message: "Invalid password",
       });
     }
-     const token = jwt.sign(
+
+    const token = jwt.sign(
       { id: userLogin._id },
       process.env.Jwt_Token || "default_secret_key",
       { expiresIn: "1d" }
     );
 
-    console.log("Password is Match");
     res.status(200).json({
       success: true,
       fname: userLogin.fname,
-      userId:userLogin._id,
+      userId: userLogin._id,
       token,
-      message: "Login Successfully..",
+      message: "Login Successfully",
     });
   } catch (error) {
-    if (error.response && error.response.data && error.response.data.message) {
-      handleError(error.response.data.message);
-    } else {
-      handleError("Something went wrong. Try again later.");
-    }
+    console.error("Sign In error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during login",
+    });
   }
 });
+
 
 module.exports = router;
